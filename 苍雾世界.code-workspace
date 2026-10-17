@@ -1,0 +1,4 @@
+{
+  "folders": [{"name": "苍雾世界 Maa 助手", "path": "."}],
+  "settings": {"python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe"}
+}

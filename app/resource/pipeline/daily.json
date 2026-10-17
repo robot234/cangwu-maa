@@ -1,0 +1,1009 @@
+{
+  "CangwuOCR": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          ".*"
+        ],
+        "threshold": 0.3
+      }
+    },
+    "action": "DoNothing"
+  },
+  "CangwuTemplate": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": "home_icon.png",
+        "threshold": 0.9
+      }
+    },
+    "action": "DoNothing"
+  },
+  "CangwuBase": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "base"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：指挥室收菜",
+      "Node.Action.Succeeded": "完成：指挥室收菜",
+      "Node.Action.Failed": "已停止：指挥室收菜，请查看日志"
+    }
+  },
+  "CangwuExpedition": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "expedition"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：远征收取与续派",
+      "Node.Action.Succeeded": "完成：远征收取与续派",
+      "Node.Action.Failed": "已停止：远征收取与续派，请查看日志"
+    }
+  },
+  "CangwuMail": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "mail"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：邮件附件",
+      "Node.Action.Succeeded": "完成：邮件附件",
+      "Node.Action.Failed": "已停止：邮件附件，请查看日志"
+    }
+  },
+  "CangwuFriends": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "friends"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：好友点赞",
+      "Node.Action.Succeeded": "完成：好友点赞",
+      "Node.Action.Failed": "已停止：好友点赞，请查看日志"
+    }
+  },
+  "CangwuEvent": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "event"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：活动扫荡 · 闪耀之始-7",
+      "Node.Action.Succeeded": "完成：活动扫荡 · 闪耀之始-7",
+      "Node.Action.Failed": "已停止：活动扫荡 · 闪耀之始-7，请查看日志"
+    }
+  },
+  "CangwuArena": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "arena"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：竞技场代理",
+      "Node.Action.Succeeded": "完成：竞技场代理",
+      "Node.Action.Failed": "已停止：竞技场代理，请查看日志"
+    }
+  },
+  "CangwuMissions": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "missions"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：任务奖励",
+      "Node.Action.Succeeded": "完成：任务奖励",
+      "Node.Action.Failed": "已停止：任务奖励，请查看日志"
+    }
+  },
+  "CangwuPass": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "pass"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：通行证奖励",
+      "Node.Action.Succeeded": "完成：通行证奖励",
+      "Node.Action.Failed": "已停止：通行证奖励，请查看日志"
+    }
+  },
+  "CangwuCheck": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "check"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：仅检查连接和识别",
+      "Node.Action.Succeeded": "完成：仅检查连接和识别",
+      "Node.Action.Failed": "已停止：仅检查连接和识别，请查看日志"
+    }
+  },
+  "CangwuEliteShop": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "shop_elite"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：精英商店 · 自选兑换",
+      "Node.Action.Succeeded": "完成：精英商店 · 自选兑换",
+      "Node.Action.Failed": "已停止：精英商店 · 自选兑换，请查看日志"
+    }
+  },
+  "CangwuArmor": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "armor"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：装甲进阶 · 每周共鸣",
+      "Node.Action.Succeeded": "完成：装甲进阶 · 每周共鸣",
+      "Node.Action.Failed": "已停止：装甲进阶 · 每周共鸣，请查看日志"
+    }
+  },
+  "CangwuFreeGifts": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "free_gifts"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：首页推荐免费礼包",
+      "Node.Action.Succeeded": "完成：首页推荐免费礼包",
+      "Node.Action.Failed": "已停止：首页推荐免费礼包，请查看日志"
+    }
+  },
+  "CangwuLogisticsShop": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "shop_logistics"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：后勤商店 · 自选兑换",
+      "Node.Action.Succeeded": "完成：后勤商店 · 自选兑换",
+      "Node.Action.Failed": "已停止：后勤商店 · 自选兑换，请查看日志"
+    }
+  },
+  "CangwuUnionShop": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "shop_union"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：联合商店 · 自选兑换",
+      "Node.Action.Succeeded": "完成：联合商店 · 自选兑换",
+      "Node.Action.Failed": "已停止：联合商店 · 自选兑换，请查看日志"
+    }
+  },
+  "CangwuMasterShop": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "shop_master"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：大师商店 · 自选兑换",
+      "Node.Action.Succeeded": "完成：大师商店 · 自选兑换",
+      "Node.Action.Failed": "已停止：大师商店 · 自选兑换，请查看日志"
+    }
+  },
+  "CangwuParam_elite_echo_gold": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_elite_ticket": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_target_ticket": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_echo_purple": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_echo_blue": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_energy": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_core_crystal10": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_core_block10": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_core_chip10": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_core_fragment10": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_arena_token": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_report": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_crystal3": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_crystal2": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_crystal1": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_shield": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_elite_arena_shield": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_logistics_core_block": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_logistics_core_chip10": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_logistics_core_fragment10": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_logistics_shield": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_logistics_core_crystal": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_logistics_star": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_logistics_report": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_logistics_origin10": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_logistics_resonance10": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_logistics_crystal3": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_logistics_crystal2": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_logistics_crystal1": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_union_core_crystal10": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_union_core_block10": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_union_core_chip10": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_union_core_fragment10": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_union_star10": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_union_report": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_union_origin10": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_union_resonance10": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_union_shield": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_master_target_ticket": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_master_energy": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_master_report": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_master_perfect_block100": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_master_cat": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_master_roses": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_master_soda": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_master_crystal3": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_master_crystal2": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_master_crystal1": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_master_star": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_master_shield3000": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_master_shield1000": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_master_shield300": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_armor_niai": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_armor_sobek": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_armor_leviathan": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  }
+}

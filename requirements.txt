@@ -1,0 +1,5 @@
+maafw==5.14.3
+numpy==2.5.4
+opencv-python-headless==4.14.0.94
+Pillow==12.3.0
+jsonschema==4.26.0

@@ -1,0 +1,47 @@
+{
+  "device": {
+    "adb_path": "",
+    "manager_path": "",
+    "vm_index": null,
+    "serial": "127.0.0.1:16384",
+    "adb_server_port": 15037,
+    "package": "com.feimo.hazeworld.mumu"
+  },
+  "tasks": {
+    "base": true,
+    "expedition": true,
+    "mail": true,
+    "friends": true,
+    "free_gifts": true,
+    "shop_elite": false,
+    "shop_logistics": false,
+    "shop_union": false,
+    "shop_master": false,
+    "armor": false,
+    "event": true,
+    "arena": true,
+    "missions": true,
+    "pass": true
+  },
+  "event": {
+    "name": "忙里偷闲的四叶草",
+    "chapter": "闪耀之始",
+    "stage": "闪耀之始-7",
+    "stamina_cost": 42,
+    "expires_at": "2026-10-25T23:00:00+08:00",
+    "entry_template": "assets/event_entry.png",
+    "reserve_stamina": 0
+  },
+  "arena": {
+    "max_tickets": 15
+  },
+  "expedition": {
+    "hours": 12,
+    "missions": ["新人驾驶员培养协助", "新人驾驶员培养协助-攻击"]
+  },
+  "limits": {
+    "run_minutes": 20,
+    "max_actions": 200,
+    "page_timeout": 35
+  }
+}

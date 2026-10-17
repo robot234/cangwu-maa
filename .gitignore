@@ -1,0 +1,31 @@
+.venv/
+**/__pycache__/
+runtime/
+app/config/
+app/cache/
+app/debug/
+app/logs/
+app/maafw/
+app/MaaAgentBinary/
+app/mxu.exe
+config.local.json
+docs/legacy/runtime/
+*.dmp
+# Local-only records, screenshots, credentials and launcher shortcuts
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.lnk
+tests/fixtures/
+docs/legacy/
+docs/验收记录.md
+docs/界面预览.png
+# Historical, one-off local resource/config generators
+tools/prepare_resources.py
+tools/save_acceptance.py
+tools/record_dependencies.py
+*.setup-part
+*.part

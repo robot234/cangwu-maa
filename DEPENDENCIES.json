@@ -1,0 +1,65 @@
+{
+  "platform": "Windows x86_64",
+  "python": "3.13.6",
+  "maafw": {
+    "version": "5.14.3",
+    "source": "https://pypi.org/project/maafw/5.14.3/"
+  },
+  "downloaded_assets": [
+    {
+      "name": "MXU",
+      "version": "2.7.1",
+      "source": "https://github.com/MistEO/MXU/releases/download/v2.7.1/MXU-win-x86_64-v2.7.1.zip",
+      "sha256": "825a62af7a344a7a47adca09d1414128e6f53a222a11cdf456f08d2e83d31724"
+    },
+    {
+      "name": "MaaFramework source",
+      "version": "5.14.3",
+      "source": "https://codeload.github.com/MaaXYZ/MaaFramework/zip/refs/tags/v5.14.3",
+      "sha256": "c6f4082c81fe2e9799761b77afeb607c85da6691b94ff5cf421b4888cee5ccfe"
+    },
+    {
+      "name": "MaaCommonAssets OCR",
+      "version": "ppocr_v5/zh_cn",
+      "source": "https://github.com/MaaXYZ/MaaCommonAssets",
+      "sha256": "d5e19ca799cbdc4eb1c3f65162c8d401611b7e2d97729f05d8edcd1003da4e18"
+    },
+    {
+      "name": "MaaFramework runtime",
+      "version": "5.14.3",
+      "source": "https://github.com/MaaXYZ/MaaFramework/releases/download/v5.14.3/MAA-win-x86_64-v5.14.3.zip",
+      "sha256": "4042fde31c583cc5125ec5b12257f8d1929672bb5cb64c9052c34fc8ff4bb8ff"
+    }
+  ],
+  "installed_files": {
+    "app/mxu.exe": "1b5487aa2442062a489e20134a82f946f76f57e733a8d8d284c3c76aaf8053e5",
+    "app/maafw/DirectML.dll": "9c9e6d822561c6c41b90e6994b3e8857cf1d66dbfb1e0c4c799c7c89b4e92da1",
+    "app/maafw/dxcompiler.dll": "9b5e10ed756c461b4ec2c83a99f1d6ace20e97826e9c0b0e966b7b1cd6f2aec6",
+    "app/maafw/dxil.dll": "cbcfe883a09fd0ca1f98abdf3a9553b560895e3283a136da82a8381253a169df",
+    "app/maafw/fastdeploy_ppocr_maa.dll": "a7d12e9b0e7bb6257a67b56051823502dcb474a40e5911d4cbbbdd50f0606085",
+    "app/maafw/MaaAdbControlUnit.dll": "6006246dc6a2813962283d97bbb1e5b472c5e6417bc23b3d11a475c86463434b",
+    "app/maafw/MaaAgentClient.dll": "11f1246b3e4556e0d4209223363ec7fb1a87e527f00e47fcc0c603bc9574a745",
+    "app/maafw/MaaAgentServer.dll": "859e0e435883ef7a09464f33b245ec369aa3f508dc0993e5b6a5c7ef412c4c6d",
+    "app/maafw/MaaCustomControlUnit.dll": "cff748b5ff1ef62d6c66e1c91c2ad67f797c1be546305dd4b4a52c0378ff0e6b",
+    "app/maafw/MaaFramework.dll": "7085fedcaae06d7521020edfe8c3a3f9545986877e1b4a4bb8cf0188b39f97be",
+    "app/maafw/MaaGamepadControlUnit.dll": "72515206f7b948eda0a57832a428b5b2e6f1f18f9533e878d15a79ce0ac07964",
+    "app/maafw/MaaRecordControlUnit.dll": "6f2d7397fea8b4d0fffeb27305f4c0a13a68fd2124b5a245b2b4c06ec8d85054",
+    "app/maafw/MaaReplayControlUnit.dll": "de4e6f28ecbbc0dd20616771f83dad3aec941c44277dcf868ef6dd7582066a1d",
+    "app/maafw/MaaToolkit.dll": "acfb67016b4caa189f46a272e8db8ccb16e5a6029dcd5ea48e631ea4668e6d58",
+    "app/maafw/MaaUtils.dll": "f71d437832891eb998369dffa0e2f96ac1663bdc7492589a088e90db2816bd71",
+    "app/maafw/MaaWin32ControlUnit.dll": "65809cb8a2c29049a4f1573e56aae8ecd304aa733f5d1db72dd7860797df8209",
+    "app/maafw/onnxruntime_maa.dll": "56e9d7d3beaad24e2ce79885201fe19f1b4dbdf511cf1d4bcb03549999c604dc",
+    "app/maafw/opencv_world4_maa.dll": "132c00f39772159ec6f3586e662f9996f725429f72ae42af603b97aa80acaceb",
+    "app/maafw/ViGEmClient.dll": "2bf0cb1d809039573c922737d298a1653d4dbc61408060ff45a9bcfde82e97d2",
+    "app/maafw/webgpu_dawn_maa.dll": "3d492640ec3253ee7277ba7d2f7e5b78669e0b32f3a1ce1fe3d544f29624279c",
+    "app/resource/model/ocr/det.onnx": "8c3b7ee97913a7942b8565669dc9acbe8846fbbaf4b63e1d7fdb339005574a33",
+    "app/resource/model/ocr/rec.onnx": "31fb844ce3a4aaf13e4bea62ae35f43bd9a509966061980c30db9b248c542a6b",
+    "app/resource/model/ocr/keys.txt": "d1979e9f794c464c0d2e0b70a7fe14dd978e9dc644c0e71f14158cdf8342af1b",
+    "app/MaaAgentBinary/maatouch/universal/maatouch": "4ea8590cd0349ce900f39ab16ef3751dad2356286b465b4293f80f9858c995d0",
+    "app/MaaAgentBinary/minitouch/armeabi/minitouch": "d26b8be354a2bafed3b1f0a0baa2393f78f3474ed1ac9c8fca13cb6c20680a3d",
+    "app/MaaAgentBinary/minitouch/x86_64/minitouch": "31aa8eb22f78f3ee4ce47ac7315847009f0e8eefa0f694c6a96d9bcced219013",
+    "app/MaaAgentBinary/minitouch/armeabi-v7a/minitouch": "34ddf634524fec1c5c94a9ef5edbbdaed057bec2cebf6b1d392fe7895411c84e",
+    "app/MaaAgentBinary/minitouch/x86/minitouch": "a97aa601a4b11147ca543563e827c2e69c60136ee55c8dfa4ecd420b025ca508",
+    "app/MaaAgentBinary/minitouch/arm64-v8a/minitouch": "a92b6ee71c7f795745e199153b91a5a8115becfc9fe107b1dc043f9ace6ee5bd"
+  }
+}

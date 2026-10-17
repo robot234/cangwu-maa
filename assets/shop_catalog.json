@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "verified_at": "2026-10-17",
+  "currency_labels": {
+    "token": "精英商店兑换币",
+    "shield": "盾币",
+    "logistics": "后勤商店兑换券",
+    "union": "联合商店兑换币",
+    "master": "大师商店兑换币"
+  },
+  "elite": [
+    {"id":"echo_gold","name":"耀闪的残响","price":7500,"currency":"token"},
+    {"id":"elite_ticket","name":"精英调度券","price":5000,"currency":"token"},
+    {"id":"target_ticket","name":"定向调度券","price":5000,"currency":"token"},
+    {"id":"echo_purple","name":"绀紫的残响","price":2200,"currency":"token"},
+    {"id":"echo_blue","name":"湛苍的残响","price":300,"currency":"token"},
+    {"id":"energy","name":"浓缩能量合剂","price":2000,"currency":"token"},
+    {"id":"core_crystal10","name":"原始核心结晶*10","price":1250,"currency":"token"},
+    {"id":"core_block10","name":"原始核心晶块*10","price":425,"currency":"token"},
+    {"id":"core_chip10","name":"原始核心芯片*10","price":250,"currency":"token"},
+    {"id":"core_fragment10","name":"原始核心碎片*10","price":150,"currency":"token"},
+    {"id":"arena_token","name":"精英演习券","price":100,"currency":"token"},
+    {"id":"report","name":"绝密报告资料","price":600,"currency":"token"},
+    {"id":"crystal3","name":"III型自选水晶","aliases":["ⅢI型自选水晶","Ⅲ型自选水晶","I!型自选水晶"],"price":125,"currency":"token"},
+    {"id":"crystal2","name":"II型自选水晶","aliases":["Ⅱ型自选水晶","Ⅱ1型自选水晶"],"price":65,"currency":"token"},
+    {"id":"crystal1","name":"I型自选水晶","aliases":["Ⅰ型自选水晶","1型自选水晶","|型自选水晶","!型自选水晶","I型选水晶"],"price":50,"currency":"token"},
+    {"id":"shield","name":"盾币","price":1,"currency":"token","unlimited":true},
+    {"id":"arena_shield","name":"精英演习券","price":3000,"currency":"shield"}
+  ],
+  "logistics": [
+    {"id":"core_block","name":"原始核心晶块","price":85,"currency":"logistics"},
+    {"id":"core_chip10","name":"原始核心芯片*10","price":500,"currency":"logistics"},
+    {"id":"core_fragment10","name":"原始核心碎片*10","price":300,"currency":"logistics"},
+    {"id":"shield","name":"盾币","price":1,"currency":"logistics","unlimited":true},
+    {"id":"core_crystal","name":"原始核心结晶","price":250,"currency":"logistics"},
+    {"id":"star","name":"幻化星碎","price":60,"currency":"logistics"},
+    {"id":"report","name":"绝密报告资料","price":1200,"currency":"logistics"},
+    {"id":"origin10","name":"共鸣原石*10","price":200,"currency":"logistics"},
+    {"id":"resonance10","name":"共鸣结晶体*10","price":700,"currency":"logistics"},
+    {"id":"crystal3","name":"III型自选水晶","price":250,"currency":"logistics"},
+    {"id":"crystal2","name":"II型自选水晶","price":125,"currency":"logistics"},
+    {"id":"crystal1","name":"I型自选水晶","price":100,"currency":"logistics"}
+  ],
+  "union": [
+    {"id":"core_crystal10","name":"原始核心结晶*10","price":500,"currency":"union"},
+    {"id":"core_block10","name":"原始核心晶块*10","price":170,"currency":"union"},
+    {"id":"core_chip10","name":"原始核心芯片*10","price":100,"currency":"union"},
+    {"id":"core_fragment10","name":"原始核心碎片*10","price":60,"currency":"union"},
+    {"id":"star10","name":"幻化星碎*10","price":120,"currency":"union"},
+    {"id":"report","name":"绝密报告资料","price":240,"currency":"union"},
+    {"id":"origin10","name":"共鸣原石*10","price":40,"currency":"union"},
+    {"id":"resonance10","name":"共鸣结晶体*10","price":140,"currency":"union"},
+    {"id":"shield","name":"盾币","price":1,"currency":"union","unlimited":true}
+  ],
+  "master": [
+    {"id":"target_ticket","name":"定向调度券","price":150,"currency":"master"},
+    {"id":"energy","name":"浓缩能量合剂","price":100,"currency":"master"},
+    {"id":"report","name":"绝密报告资料","price":50,"currency":"master"},
+    {"id":"perfect_block100","name":"完美核心晶块*100","price":100,"currency":"master"},
+    {"id":"cat","name":"巨大猫猫玩偶","price":30,"currency":"master"},
+    {"id":"roses","name":"玫瑰花束","price":20,"currency":"master"},
+    {"id":"soda","name":"碳酸汽水","price":10,"currency":"master"},
+    {"id":"crystal3","name":"III型自选水晶","price":15,"currency":"master"},
+    {"id":"crystal2","name":"II型自选水晶","price":5,"currency":"master"},
+    {"id":"crystal1","name":"I型自选水晶","price":5,"currency":"master"},
+    {"id":"star","name":"幻化星碎","price":5,"currency":"master"},
+    {"id":"shield3000","name":"盾币*3000","price":10,"currency":"master"},
+    {"id":"shield1000","name":"盾币*1000","price":5,"currency":"master"},
+    {"id":"shield300","name":"盾币*300","price":2,"currency":"master","unlimited":true}
+  ]
+}

@@ -1,0 +1,5135 @@
+{
+  "interface_version": 2,
+  "name": "CangwuMaa",
+  "label": "苍雾世界 · 日常助手",
+  "version": "0.4.0",
+  "description": "description.md",
+  "welcome": "welcome.md",
+  "icon": "icon.png",
+  "controller": [
+    {
+      "name": "MuMu",
+      "label": "MuMu · 苍雾世界国服",
+      "type": "Adb",
+      "display_short_side": 720
+    }
+  ],
+  "resource": [
+    {
+      "name": "OfficialCN",
+      "label": "国服 · 闪耀之始",
+      "path": [
+        "./resource"
+      ]
+    }
+  ],
+  "agent": {
+    "child_exec": "../.venv/Scripts/python.exe",
+    "child_args": [
+      "-u",
+      "../agent/main.py"
+    ]
+  },
+  "group": [
+    {
+      "name": "收菜"
+    },
+    {
+      "name": "兑换"
+    },
+    {
+      "name": "作战"
+    },
+    {
+      "name": "领奖"
+    },
+    {
+      "name": "工具"
+    }
+  ],
+  "task": [
+    {
+      "name": "base",
+      "label": "指挥室收菜",
+      "entry": "CangwuBase",
+      "group": [
+        "收菜"
+      ],
+      "default_check": true,
+      "description": "收集战斗训练、体能锻炼和物资生产的设施资源。"
+    },
+    {
+      "name": "expedition",
+      "label": "远征收取与续派",
+      "entry": "CangwuExpedition",
+      "group": [
+        "收菜"
+      ],
+      "default_check": true,
+      "option": [
+        "expedition_hours"
+      ],
+      "description": "收取已结束的两支新人培养远征，并沿用已保存的队伍续派。运行中的远征不会被取消。"
+    },
+    {
+      "name": "mail",
+      "label": "邮件附件",
+      "entry": "CangwuMail",
+      "group": [
+        "收菜"
+      ],
+      "default_check": true,
+      "description": "领取全部邮件附件。"
+    },
+    {
+      "name": "friends",
+      "label": "好友点赞",
+      "entry": "CangwuFriends",
+      "group": [
+        "收菜"
+      ],
+      "default_check": true,
+      "description": "领取当日好友体力；已满时跳过。"
+    },
+    {
+      "name": "free_gifts",
+      "label": "首页推荐 · 免费礼包",
+      "entry": "CangwuFreeGifts",
+      "group": [
+        "收菜"
+      ],
+      "default_check": true,
+      "description": "进入商城首页推荐→通常礼包，仅领取名称为免费礼包、列表和确认消耗均为0的礼包。已领取时跳过；不处理付费礼包。"
+    },
+    {
+      "name": "shop_elite",
+      "label": "精英商店 · 自选兑换",
+      "entry": "CangwuEliteShop",
+      "group": [
+        "兑换"
+      ],
+      "default_check": false,
+      "description": "仅兑换勾选商品，每项单独设置每日份数；默认不选。超过限购或现有资产可兑换数量时按游戏MAX兑换，售罄跳过。名称中*10/*100表示一份内含数量，同名商品按币种、价格和图片复核。每日目标按北京时间05:00换日。重复运行只补未完成数量。",
+      "option": [
+        "choice_elite_echo_gold",
+        "choice_elite_elite_ticket",
+        "choice_elite_target_ticket",
+        "choice_elite_echo_purple",
+        "choice_elite_echo_blue",
+        "choice_elite_energy",
+        "choice_elite_core_crystal10",
+        "choice_elite_core_block10",
+        "choice_elite_core_chip10",
+        "choice_elite_core_fragment10",
+        "choice_elite_arena_token",
+        "choice_elite_report",
+        "choice_elite_crystal3",
+        "choice_elite_crystal2",
+        "choice_elite_crystal1",
+        "choice_elite_shield",
+        "choice_elite_arena_shield"
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_echo_gold": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_elite_ticket": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_target_ticket": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_echo_purple": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_echo_blue": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_energy": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_core_crystal10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_core_block10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_core_chip10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_core_fragment10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_arena_token": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_report": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_crystal3": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_crystal2": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_crystal1": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_shield": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_elite_arena_shield": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "shop_logistics",
+      "label": "后勤商店 · 自选兑换",
+      "entry": "CangwuLogisticsShop",
+      "group": [
+        "兑换"
+      ],
+      "default_check": false,
+      "description": "仅兑换勾选商品，每项单独设置每周份数；默认不选。超过限购或现有资产可兑换数量时按游戏MAX兑换，售罄跳过。名称中*10/*100表示一份内含数量，同名商品按币种、价格和图片复核。后勤按周累计，周一北京时间05:00换周。重复运行只补未完成数量。",
+      "option": [
+        "choice_logistics_core_block",
+        "choice_logistics_core_chip10",
+        "choice_logistics_core_fragment10",
+        "choice_logistics_shield",
+        "choice_logistics_core_crystal",
+        "choice_logistics_star",
+        "choice_logistics_report",
+        "choice_logistics_origin10",
+        "choice_logistics_resonance10",
+        "choice_logistics_crystal3",
+        "choice_logistics_crystal2",
+        "choice_logistics_crystal1"
+      ],
+      "pipeline_override": {
+        "CangwuParam_logistics_core_block": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_logistics_core_chip10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_logistics_core_fragment10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_logistics_shield": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_logistics_core_crystal": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_logistics_star": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_logistics_report": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_logistics_origin10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_logistics_resonance10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_logistics_crystal3": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_logistics_crystal2": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_logistics_crystal1": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "shop_union",
+      "label": "联合商店 · 自选兑换",
+      "entry": "CangwuUnionShop",
+      "group": [
+        "兑换"
+      ],
+      "default_check": false,
+      "description": "仅兑换勾选商品，每项单独设置每日份数；默认不选。超过限购或现有资产可兑换数量时按游戏MAX兑换，售罄跳过。名称中*10/*100表示一份内含数量，同名商品按币种、价格和图片复核。每日目标按北京时间05:00换日。重复运行只补未完成数量。",
+      "option": [
+        "choice_union_core_crystal10",
+        "choice_union_core_block10",
+        "choice_union_core_chip10",
+        "choice_union_core_fragment10",
+        "choice_union_star10",
+        "choice_union_report",
+        "choice_union_origin10",
+        "choice_union_resonance10",
+        "choice_union_shield"
+      ],
+      "pipeline_override": {
+        "CangwuParam_union_core_crystal10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_union_core_block10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_union_core_chip10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_union_core_fragment10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_union_star10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_union_report": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_union_origin10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_union_resonance10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_union_shield": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "shop_master",
+      "label": "大师商店 · 自选兑换",
+      "entry": "CangwuMasterShop",
+      "group": [
+        "兑换"
+      ],
+      "default_check": false,
+      "description": "仅兑换勾选商品，每项单独设置每日份数；默认不选。超过限购或现有资产可兑换数量时按游戏MAX兑换，售罄跳过。名称中*10/*100表示一份内含数量，同名商品按币种、价格和图片复核。每日目标按北京时间05:00换日。重复运行只补未完成数量。",
+      "option": [
+        "choice_master_target_ticket",
+        "choice_master_energy",
+        "choice_master_report",
+        "choice_master_perfect_block100",
+        "choice_master_cat",
+        "choice_master_roses",
+        "choice_master_soda",
+        "choice_master_crystal3",
+        "choice_master_crystal2",
+        "choice_master_crystal1",
+        "choice_master_star",
+        "choice_master_shield3000",
+        "choice_master_shield1000",
+        "choice_master_shield300"
+      ],
+      "pipeline_override": {
+        "CangwuParam_master_target_ticket": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_master_energy": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_master_report": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_master_perfect_block100": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_master_cat": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_master_roses": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_master_soda": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_master_crystal3": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_master_crystal2": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_master_crystal1": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_master_star": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_master_shield3000": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_master_shield1000": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_master_shield300": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "armor",
+      "label": "装甲进阶 · 每周共鸣",
+      "entry": "CangwuArmor",
+      "group": [
+        "作战"
+      ],
+      "default_check": false,
+      "description": "逆爱、索贝克、利维坦分别设置每周目标，合计≤5。只扫荡已通关1-5地狱，每次40体力；游戏剩余0/5时跳过。应放在活动清体力之前。",
+      "option": [
+        "choice_armor_niai",
+        "choice_armor_sobek",
+        "choice_armor_leviathan"
+      ],
+      "pipeline_override": {
+        "CangwuParam_armor_niai": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_armor_sobek": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_armor_leviathan": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "event",
+      "label": "活动扫荡 · 闪耀之始-7",
+      "entry": "CangwuEvent",
+      "group": [
+        "作战"
+      ],
+      "default_check": true,
+      "option": [
+        "reserve_stamina"
+      ],
+      "description": "扫荡你指定的「闪耀之始-7」，每次 42 体力。只消耗现有体力；不足一次就跳过。当前配置到期：2026-10-25 23:00。"
+    },
+    {
+      "name": "arena",
+      "label": "竞技场代理",
+      "entry": "CangwuArena",
+      "group": [
+        "作战"
+      ],
+      "default_check": true,
+      "option": [
+        "arena_limit"
+      ],
+      "description": "使用现有演习券，等待代理结束并领取结算。若上次代理还未结束，会先等它结算。"
+    },
+    {
+      "name": "missions",
+      "label": "任务奖励",
+      "entry": "CangwuMissions",
+      "group": [
+        "领奖"
+      ],
+      "default_check": true,
+      "description": "领取每日、每周和每月任务当前可领的奖励。"
+    },
+    {
+      "name": "pass",
+      "label": "通行证奖励",
+      "entry": "CangwuPass",
+      "group": [
+        "领奖"
+      ],
+      "default_check": true,
+      "description": "先领取任务积分，再领取已解锁的等级奖励。"
+    },
+    {
+      "name": "check",
+      "label": "仅检查连接和识别",
+      "entry": "CangwuCheck",
+      "group": [
+        "工具"
+      ],
+      "default_check": false,
+      "description": "只检查前台游戏、Maa 截图和 OCR，不点击游戏。"
+    }
+  ],
+  "option": {
+    "reserve_stamina": {
+      "type": "input",
+      "label": "保留体力",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "至少留下多少体力",
+          "default": "0",
+          "pipeline_type": "int",
+          "verify": "^[0-9]{1,5}$",
+          "pattern_msg": "请输入 0～99999 的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuEvent": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuTask",
+              "custom_action_param": {
+                "task": "event",
+                "reserve_stamina": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "arena_limit": {
+      "type": "input",
+      "label": "本轮用票上限",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "最多使用的演习券",
+          "default": "15",
+          "pipeline_type": "int",
+          "verify": "^([0-9]|1[0-5])$",
+          "pattern_msg": "请输入 0～15 的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuArena": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuTask",
+              "custom_action_param": {
+                "task": "arena",
+                "max_tickets": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "expedition_hours": {
+      "type": "select",
+      "label": "续派时长",
+      "default_case": "12h",
+      "cases": [
+        {
+          "name": "12h",
+          "label": "12 小时",
+          "pipeline_override": {
+            "CangwuExpedition": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuTask",
+                  "custom_action_param": {
+                    "task": "expedition",
+                    "hours": 12
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "8h",
+          "label": "8 小时",
+          "pipeline_override": {
+            "CangwuExpedition": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuTask",
+                  "custom_action_param": {
+                    "task": "expedition",
+                    "hours": 8
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4h",
+          "label": "4 小时",
+          "pipeline_override": {
+            "CangwuExpedition": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuTask",
+                  "custom_action_param": {
+                    "task": "expedition",
+                    "hours": 4
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_echo_gold": {
+      "type": "input",
+      "label": "耀闪的残响 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_echo_gold": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_echo_gold": {
+      "type": "switch",
+      "label": "耀闪的残响 · 7500 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_echo_gold": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_echo_gold"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_echo_gold": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_elite_ticket": {
+      "type": "input",
+      "label": "精英调度券 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_elite_ticket": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_elite_ticket": {
+      "type": "switch",
+      "label": "精英调度券 · 5000 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_elite_ticket": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_elite_ticket"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_elite_ticket": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_target_ticket": {
+      "type": "input",
+      "label": "定向调度券 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_target_ticket": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_target_ticket": {
+      "type": "switch",
+      "label": "定向调度券 · 5000 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_target_ticket": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_target_ticket"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_target_ticket": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_echo_purple": {
+      "type": "input",
+      "label": "绀紫的残响 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_echo_purple": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_echo_purple": {
+      "type": "switch",
+      "label": "绀紫的残响 · 2200 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_echo_purple": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_echo_purple"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_echo_purple": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_echo_blue": {
+      "type": "input",
+      "label": "湛苍的残响 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_echo_blue": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_echo_blue": {
+      "type": "switch",
+      "label": "湛苍的残响 · 300 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_echo_blue": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_echo_blue"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_echo_blue": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_energy": {
+      "type": "input",
+      "label": "浓缩能量合剂 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_energy": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_energy": {
+      "type": "switch",
+      "label": "浓缩能量合剂 · 2000 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_energy": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_energy"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_energy": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_core_crystal10": {
+      "type": "input",
+      "label": "原始核心结晶*10 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_core_crystal10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_core_crystal10": {
+      "type": "switch",
+      "label": "原始核心结晶*10 · 1250 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_core_crystal10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_core_crystal10"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_core_crystal10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_core_block10": {
+      "type": "input",
+      "label": "原始核心晶块*10 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_core_block10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_core_block10": {
+      "type": "switch",
+      "label": "原始核心晶块*10 · 425 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_core_block10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_core_block10"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_core_block10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_core_chip10": {
+      "type": "input",
+      "label": "原始核心芯片*10 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_core_chip10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_core_chip10": {
+      "type": "switch",
+      "label": "原始核心芯片*10 · 250 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_core_chip10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_core_chip10"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_core_chip10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_core_fragment10": {
+      "type": "input",
+      "label": "原始核心碎片*10 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_core_fragment10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_core_fragment10": {
+      "type": "switch",
+      "label": "原始核心碎片*10 · 150 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_core_fragment10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_core_fragment10"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_core_fragment10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_arena_token": {
+      "type": "input",
+      "label": "精英演习券 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_arena_token": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_arena_token": {
+      "type": "switch",
+      "label": "精英演习券 · 100 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_arena_token": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_arena_token"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_arena_token": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_report": {
+      "type": "input",
+      "label": "绝密报告资料 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_report": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_report": {
+      "type": "switch",
+      "label": "绝密报告资料 · 600 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_report": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_report"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_report": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_crystal3": {
+      "type": "input",
+      "label": "III型自选水晶 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_crystal3": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_crystal3": {
+      "type": "switch",
+      "label": "III型自选水晶 · 125 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_crystal3": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_crystal3"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_crystal3": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_crystal2": {
+      "type": "input",
+      "label": "II型自选水晶 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_crystal2": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_crystal2": {
+      "type": "switch",
+      "label": "II型自选水晶 · 65 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_crystal2": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_crystal2"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_crystal2": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_crystal1": {
+      "type": "input",
+      "label": "I型自选水晶 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_crystal1": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_crystal1": {
+      "type": "switch",
+      "label": "I型自选水晶 · 50 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_crystal1": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_crystal1"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_crystal1": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_shield": {
+      "type": "input",
+      "label": "盾币 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_shield": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_shield": {
+      "type": "switch",
+      "label": "盾币 · 1 精英商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_shield": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_shield"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_shield": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_elite_arena_shield": {
+      "type": "input",
+      "label": "精英演习券 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_elite_arena_shield": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_elite_arena_shield": {
+      "type": "switch",
+      "label": "精英演习券 · 3000 盾币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_elite_arena_shield": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_elite_arena_shield"
+          ],
+          "pipeline_override": {
+            "CangwuParam_elite_arena_shield": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_logistics_core_block": {
+      "type": "input",
+      "label": "原始核心晶块 · 每周份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每周兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_logistics_core_block": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_logistics_core_block": {
+      "type": "switch",
+      "label": "原始核心晶块 · 85 后勤商店兑换券",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_logistics_core_block": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_logistics_core_block"
+          ],
+          "pipeline_override": {
+            "CangwuParam_logistics_core_block": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_logistics_core_chip10": {
+      "type": "input",
+      "label": "原始核心芯片*10 · 每周份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每周兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_logistics_core_chip10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_logistics_core_chip10": {
+      "type": "switch",
+      "label": "原始核心芯片*10 · 500 后勤商店兑换券",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_logistics_core_chip10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_logistics_core_chip10"
+          ],
+          "pipeline_override": {
+            "CangwuParam_logistics_core_chip10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_logistics_core_fragment10": {
+      "type": "input",
+      "label": "原始核心碎片*10 · 每周份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每周兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_logistics_core_fragment10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_logistics_core_fragment10": {
+      "type": "switch",
+      "label": "原始核心碎片*10 · 300 后勤商店兑换券",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_logistics_core_fragment10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_logistics_core_fragment10"
+          ],
+          "pipeline_override": {
+            "CangwuParam_logistics_core_fragment10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_logistics_shield": {
+      "type": "input",
+      "label": "盾币 · 每周份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每周兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_logistics_shield": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_logistics_shield": {
+      "type": "switch",
+      "label": "盾币 · 1 后勤商店兑换券",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_logistics_shield": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_logistics_shield"
+          ],
+          "pipeline_override": {
+            "CangwuParam_logistics_shield": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_logistics_core_crystal": {
+      "type": "input",
+      "label": "原始核心结晶 · 每周份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每周兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_logistics_core_crystal": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_logistics_core_crystal": {
+      "type": "switch",
+      "label": "原始核心结晶 · 250 后勤商店兑换券",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_logistics_core_crystal": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_logistics_core_crystal"
+          ],
+          "pipeline_override": {
+            "CangwuParam_logistics_core_crystal": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_logistics_star": {
+      "type": "input",
+      "label": "幻化星碎 · 每周份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每周兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_logistics_star": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_logistics_star": {
+      "type": "switch",
+      "label": "幻化星碎 · 60 后勤商店兑换券",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_logistics_star": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_logistics_star"
+          ],
+          "pipeline_override": {
+            "CangwuParam_logistics_star": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_logistics_report": {
+      "type": "input",
+      "label": "绝密报告资料 · 每周份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每周兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_logistics_report": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_logistics_report": {
+      "type": "switch",
+      "label": "绝密报告资料 · 1200 后勤商店兑换券",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_logistics_report": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_logistics_report"
+          ],
+          "pipeline_override": {
+            "CangwuParam_logistics_report": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_logistics_origin10": {
+      "type": "input",
+      "label": "共鸣原石*10 · 每周份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每周兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_logistics_origin10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_logistics_origin10": {
+      "type": "switch",
+      "label": "共鸣原石*10 · 200 后勤商店兑换券",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_logistics_origin10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_logistics_origin10"
+          ],
+          "pipeline_override": {
+            "CangwuParam_logistics_origin10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_logistics_resonance10": {
+      "type": "input",
+      "label": "共鸣结晶体*10 · 每周份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每周兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_logistics_resonance10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_logistics_resonance10": {
+      "type": "switch",
+      "label": "共鸣结晶体*10 · 700 后勤商店兑换券",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_logistics_resonance10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_logistics_resonance10"
+          ],
+          "pipeline_override": {
+            "CangwuParam_logistics_resonance10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_logistics_crystal3": {
+      "type": "input",
+      "label": "III型自选水晶 · 每周份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每周兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_logistics_crystal3": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_logistics_crystal3": {
+      "type": "switch",
+      "label": "III型自选水晶 · 250 后勤商店兑换券",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_logistics_crystal3": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_logistics_crystal3"
+          ],
+          "pipeline_override": {
+            "CangwuParam_logistics_crystal3": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_logistics_crystal2": {
+      "type": "input",
+      "label": "II型自选水晶 · 每周份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每周兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_logistics_crystal2": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_logistics_crystal2": {
+      "type": "switch",
+      "label": "II型自选水晶 · 125 后勤商店兑换券",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_logistics_crystal2": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_logistics_crystal2"
+          ],
+          "pipeline_override": {
+            "CangwuParam_logistics_crystal2": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_logistics_crystal1": {
+      "type": "input",
+      "label": "I型自选水晶 · 每周份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每周兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_logistics_crystal1": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_logistics_crystal1": {
+      "type": "switch",
+      "label": "I型自选水晶 · 100 后勤商店兑换券",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_logistics_crystal1": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_logistics_crystal1"
+          ],
+          "pipeline_override": {
+            "CangwuParam_logistics_crystal1": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_union_core_crystal10": {
+      "type": "input",
+      "label": "原始核心结晶*10 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_union_core_crystal10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_union_core_crystal10": {
+      "type": "switch",
+      "label": "原始核心结晶*10 · 500 联合商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_union_core_crystal10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_union_core_crystal10"
+          ],
+          "pipeline_override": {
+            "CangwuParam_union_core_crystal10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_union_core_block10": {
+      "type": "input",
+      "label": "原始核心晶块*10 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_union_core_block10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_union_core_block10": {
+      "type": "switch",
+      "label": "原始核心晶块*10 · 170 联合商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_union_core_block10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_union_core_block10"
+          ],
+          "pipeline_override": {
+            "CangwuParam_union_core_block10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_union_core_chip10": {
+      "type": "input",
+      "label": "原始核心芯片*10 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_union_core_chip10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_union_core_chip10": {
+      "type": "switch",
+      "label": "原始核心芯片*10 · 100 联合商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_union_core_chip10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_union_core_chip10"
+          ],
+          "pipeline_override": {
+            "CangwuParam_union_core_chip10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_union_core_fragment10": {
+      "type": "input",
+      "label": "原始核心碎片*10 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_union_core_fragment10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_union_core_fragment10": {
+      "type": "switch",
+      "label": "原始核心碎片*10 · 60 联合商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_union_core_fragment10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_union_core_fragment10"
+          ],
+          "pipeline_override": {
+            "CangwuParam_union_core_fragment10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_union_star10": {
+      "type": "input",
+      "label": "幻化星碎*10 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_union_star10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_union_star10": {
+      "type": "switch",
+      "label": "幻化星碎*10 · 120 联合商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_union_star10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_union_star10"
+          ],
+          "pipeline_override": {
+            "CangwuParam_union_star10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_union_report": {
+      "type": "input",
+      "label": "绝密报告资料 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_union_report": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_union_report": {
+      "type": "switch",
+      "label": "绝密报告资料 · 240 联合商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_union_report": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_union_report"
+          ],
+          "pipeline_override": {
+            "CangwuParam_union_report": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_union_origin10": {
+      "type": "input",
+      "label": "共鸣原石*10 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_union_origin10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_union_origin10": {
+      "type": "switch",
+      "label": "共鸣原石*10 · 40 联合商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_union_origin10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_union_origin10"
+          ],
+          "pipeline_override": {
+            "CangwuParam_union_origin10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_union_resonance10": {
+      "type": "input",
+      "label": "共鸣结晶体*10 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_union_resonance10": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_union_resonance10": {
+      "type": "switch",
+      "label": "共鸣结晶体*10 · 140 联合商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_union_resonance10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_union_resonance10"
+          ],
+          "pipeline_override": {
+            "CangwuParam_union_resonance10": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_union_shield": {
+      "type": "input",
+      "label": "盾币 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_union_shield": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_union_shield": {
+      "type": "switch",
+      "label": "盾币 · 1 联合商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_union_shield": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_union_shield"
+          ],
+          "pipeline_override": {
+            "CangwuParam_union_shield": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_master_target_ticket": {
+      "type": "input",
+      "label": "定向调度券 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_master_target_ticket": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_master_target_ticket": {
+      "type": "switch",
+      "label": "定向调度券 · 150 大师商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_master_target_ticket": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_master_target_ticket"
+          ],
+          "pipeline_override": {
+            "CangwuParam_master_target_ticket": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_master_energy": {
+      "type": "input",
+      "label": "浓缩能量合剂 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_master_energy": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_master_energy": {
+      "type": "switch",
+      "label": "浓缩能量合剂 · 100 大师商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_master_energy": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_master_energy"
+          ],
+          "pipeline_override": {
+            "CangwuParam_master_energy": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_master_report": {
+      "type": "input",
+      "label": "绝密报告资料 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_master_report": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_master_report": {
+      "type": "switch",
+      "label": "绝密报告资料 · 50 大师商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_master_report": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_master_report"
+          ],
+          "pipeline_override": {
+            "CangwuParam_master_report": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_master_perfect_block100": {
+      "type": "input",
+      "label": "完美核心晶块*100 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_master_perfect_block100": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_master_perfect_block100": {
+      "type": "switch",
+      "label": "完美核心晶块*100 · 100 大师商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_master_perfect_block100": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_master_perfect_block100"
+          ],
+          "pipeline_override": {
+            "CangwuParam_master_perfect_block100": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_master_cat": {
+      "type": "input",
+      "label": "巨大猫猫玩偶 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_master_cat": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_master_cat": {
+      "type": "switch",
+      "label": "巨大猫猫玩偶 · 30 大师商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_master_cat": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_master_cat"
+          ],
+          "pipeline_override": {
+            "CangwuParam_master_cat": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_master_roses": {
+      "type": "input",
+      "label": "玫瑰花束 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_master_roses": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_master_roses": {
+      "type": "switch",
+      "label": "玫瑰花束 · 20 大师商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_master_roses": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_master_roses"
+          ],
+          "pipeline_override": {
+            "CangwuParam_master_roses": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_master_soda": {
+      "type": "input",
+      "label": "碳酸汽水 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_master_soda": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_master_soda": {
+      "type": "switch",
+      "label": "碳酸汽水 · 10 大师商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_master_soda": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_master_soda"
+          ],
+          "pipeline_override": {
+            "CangwuParam_master_soda": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_master_crystal3": {
+      "type": "input",
+      "label": "III型自选水晶 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_master_crystal3": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_master_crystal3": {
+      "type": "switch",
+      "label": "III型自选水晶 · 15 大师商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_master_crystal3": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_master_crystal3"
+          ],
+          "pipeline_override": {
+            "CangwuParam_master_crystal3": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_master_crystal2": {
+      "type": "input",
+      "label": "II型自选水晶 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_master_crystal2": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_master_crystal2": {
+      "type": "switch",
+      "label": "II型自选水晶 · 5 大师商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_master_crystal2": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_master_crystal2"
+          ],
+          "pipeline_override": {
+            "CangwuParam_master_crystal2": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_master_crystal1": {
+      "type": "input",
+      "label": "I型自选水晶 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_master_crystal1": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_master_crystal1": {
+      "type": "switch",
+      "label": "I型自选水晶 · 5 大师商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_master_crystal1": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_master_crystal1"
+          ],
+          "pipeline_override": {
+            "CangwuParam_master_crystal1": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_master_star": {
+      "type": "input",
+      "label": "幻化星碎 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_master_star": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_master_star": {
+      "type": "switch",
+      "label": "幻化星碎 · 5 大师商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_master_star": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_master_star"
+          ],
+          "pipeline_override": {
+            "CangwuParam_master_star": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_master_shield3000": {
+      "type": "input",
+      "label": "盾币*3000 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_master_shield3000": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_master_shield3000": {
+      "type": "switch",
+      "label": "盾币*3000 · 10 大师商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_master_shield3000": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_master_shield3000"
+          ],
+          "pipeline_override": {
+            "CangwuParam_master_shield3000": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_master_shield1000": {
+      "type": "input",
+      "label": "盾币*1000 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_master_shield1000": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_master_shield1000": {
+      "type": "switch",
+      "label": "盾币*1000 · 5 大师商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_master_shield1000": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_master_shield1000"
+          ],
+          "pipeline_override": {
+            "CangwuParam_master_shield1000": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_master_shield300": {
+      "type": "input",
+      "label": "盾币*300 · 每日份数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每日兑换份数（超过库存或资产上限时按当前MAX兑换）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-9][0-9]{0,2}$",
+          "pattern_msg": "请输入1～999的整数"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_master_shield300": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_master_shield300": {
+      "type": "switch",
+      "label": "盾币*300 · 2 大师商店兑换币",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不兑换",
+          "pipeline_override": {
+            "CangwuParam_master_shield300": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "兑换",
+          "option": [
+            "quantity_master_shield300"
+          ],
+          "pipeline_override": {
+            "CangwuParam_master_shield300": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_armor_niai": {
+      "type": "input",
+      "label": "逆爱 · 每周次数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每周次数（所有共鸣合计最多5次）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-5]$",
+          "pattern_msg": "请输入1～5，三项合计不超过5"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_armor_niai": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_armor_niai": {
+      "type": "switch",
+      "label": "逆爱",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_armor_niai": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_armor_niai"
+          ],
+          "pipeline_override": {
+            "CangwuParam_armor_niai": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_armor_sobek": {
+      "type": "input",
+      "label": "索贝克 · 每周次数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每周次数（所有共鸣合计最多5次）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-5]$",
+          "pattern_msg": "请输入1～5，三项合计不超过5"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_armor_sobek": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_armor_sobek": {
+      "type": "switch",
+      "label": "索贝克",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_armor_sobek": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_armor_sobek"
+          ],
+          "pipeline_override": {
+            "CangwuParam_armor_sobek": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_armor_leviathan": {
+      "type": "input",
+      "label": "利维坦 · 每周次数",
+      "inputs": [
+        {
+          "name": "amount",
+          "label": "每周次数（所有共鸣合计最多5次）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^[1-5]$",
+          "pattern_msg": "请输入1～5，三项合计不超过5"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_armor_leviathan": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_armor_leviathan": {
+      "type": "switch",
+      "label": "利维坦",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_armor_leviathan": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_armor_leviathan"
+          ],
+          "pipeline_override": {
+            "CangwuParam_armor_leviathan": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
