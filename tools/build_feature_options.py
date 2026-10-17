@@ -74,7 +74,6 @@ def main():
     interface["task"][position:position] = tasks
     if not any(g["name"] == "兑换" for g in interface["group"]):
         interface["group"].insert(1, {"name": "兑换"})
-    interface["version"] = "0.4.0"
     interface_path.write_text(json.dumps(interface, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     pipeline_path.write_text(json.dumps(pipeline, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     lines = ["# 商店商品清单", "", "实机核对日期：2026-10-17。逐商品单独勾选并填写目标份数（1～999）；超过库存或已有资产可兑上限时按游戏MAX兑换，售罄跳过。", "", "后勤按每周目标累计，周一北京时间05:00换周；其余商店保留每日目标，05:00换日。同周期重跑只补未完成数量，手动购买以游戏剩余库存为准。调度商店已移除。", "", "货币标签按实机图标区分，价格或商品变化时停止并重新核对。名称中的*10、*100等表示每份内含数量。", ""]

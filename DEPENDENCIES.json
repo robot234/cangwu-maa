@@ -7,6 +7,12 @@
   },
   "downloaded_assets": [
     {
+      "name": "Python embeddable",
+      "version": "3.13.6",
+      "source": "https://www.python.org/ftp/python/3.13.6/python-3.13.6-embed-amd64.zip",
+      "sha256": "d6ab71980c0be5809f2a0edd991e28d999e7ac971dc3b6da676dc2f80eac41dd"
+    },
+    {
       "name": "MXU",
       "version": "2.7.1",
       "source": "https://github.com/MistEO/MXU/releases/download/v2.7.1/MXU-win-x86_64-v2.7.1.zip",
