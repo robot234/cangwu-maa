@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 from datetime import datetime, timezone
 import json
 import os
@@ -57,9 +58,33 @@ def verify_layout(target: Path) -> None:
             raise RuntimeError("Local or intermediate file in package: " + str(relative))
         if relative.parts[0] == "runtime" or relative.parts[:2] in {("app", "config"), ("app", "logs"), ("app", "debug"), ("app", "cache")}:
             raise RuntimeError("User state in package: " + str(relative))
+        if path.is_dir() and path.name in {"tests", "__pycache__"}:
+            raise RuntimeError("Development directory in package: " + str(relative))
     for name in ("python.exe", "pythonw.exe", "python313.dll", "python313.zip", "python313._pth", "LICENSE.txt"):
         if not (target / ".venv/Scripts" / name).is_file():
             raise RuntimeError("Incomplete embedded Python: " + name)
+
+
+def trim_dependency_tests(packages: Path) -> None:
+    # Remove upstream test suites, retaining public helpers such as numpy.testing
+    # and each dependency's license, metadata, and runtime data files.
+    for path in sorted(packages.rglob("tests"), key=lambda p: len(p.parts), reverse=True):
+        if path.is_dir():
+            if path.is_symlink() or not path.resolve().is_relative_to(packages.resolve()):
+                raise RuntimeError("Unexpected dependency test directory")
+            shutil.rmtree(path)
+    # Remove RECORD entries for the omitted test files and console wrappers.
+    # Every retained row still refers to the original wheel file and hash.
+    for record in packages.glob("*.dist-info/RECORD"):
+        with record.open(encoding="utf-8", newline="") as stream:
+            rows = list(csv.reader(stream))
+        retained = []
+        for row in rows:
+            path = (packages / row[0]).resolve()
+            if path.is_relative_to(packages.resolve()) and path.is_file():
+                retained.append(row)
+        with record.open("w", encoding="utf-8", newline="") as stream:
+            csv.writer(stream, lineterminator="\n").writerows(retained)
 
 
 def main() -> int:
@@ -121,6 +146,7 @@ def main() -> int:
             shutil.rmtree(path)
     for path in packages.rglob("*.pyc"):
         path.unlink()
+    trim_dependency_tests(packages)
     python = str(scripts / "python.exe")
     environment = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONIOENCODING="utf-8", PYTHONUTF8="1")
     environment.pop("MAAFW_BINARY_PATH", None)

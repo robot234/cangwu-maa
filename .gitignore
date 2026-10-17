@@ -19,7 +19,7 @@ docs/legacy/runtime/
 *.key
 *.pfx
 *.lnk
-tests/fixtures/
+tests/
 docs/legacy/
 docs/验收记录.md
 docs/界面预览.png
@@ -29,3 +29,17 @@ tools/save_acceptance.py
 tools/record_dependencies.py
 *.setup-part
 *.part
+# Local development and acceptance material, kept on disk only
+/AGENTS.md
+*.code-workspace
+docs/验证说明.md
+tools/inspect_ui.py
+tools/mxu_acceptance.py
+tools/mxu_feature_acceptance.py
+tools/verify_replays.py
+tools/verify_feature_replays.py
+# Retired shop templates
+assets/currency_dispatch*.png
+assets/currency_orange_ticket*.png
+app/resource/image/currency_dispatch*.png
+app/resource/image/currency_orange_ticket*.png
