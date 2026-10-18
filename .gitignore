@@ -9,6 +9,7 @@ app/maafw/
 app/MaaAgentBinary/
 app/mxu.exe
 config.local.json
+/PACKAGE.json
 docs/legacy/runtime/
 *.dmp
 # Local-only records, screenshots, credentials and launcher shortcuts

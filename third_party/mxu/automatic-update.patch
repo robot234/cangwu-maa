@@ -1,0 +1,195 @@
+diff --git a/src/App.tsx b/src/App.tsx
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -89,6 +89,7 @@
+ import { useIsMobile } from '@/hooks/useIsMobile';
+ import { ScrollText } from 'lucide-react';
+ import { defaultConfig, defaultWindowSize, isValidMxuConfig } from '@/types/config';
++import { useCangwuUpdateManager } from '@/services/cangwuUpdateService';
+ 
+ const log = loggers.app;
+ 
+@@ -138,6 +139,7 @@
+ });
+ 
+ function App() {
++  useCangwuUpdateManager();
+   const [loadingState, setLoadingState] = useState<LoadingState>('loading');
+   const [errorMessage, setErrorMessage] = useState<string>('');
+   const [versionWarning, setVersionWarning] = useState<{ current: string; minimum: string } | null>(
+diff --git a/src/components/SettingsPage.tsx b/src/components/SettingsPage.tsx
+--- a/src/components/SettingsPage.tsx
++++ b/src/components/SettingsPage.tsx
+@@ -24,6 +24,7 @@
+ import { loadIconAsDataUrl } from '@/services/contentResolver';
+ import { ConfirmDialog } from './ConfirmDialog';
+ import { OptionEditor } from './OptionEditor';
++import { CangwuUpdateSection } from './settings/CangwuUpdateSection';
+ import {
+   AppearanceSection,
+   HotkeySection,
+@@ -270,7 +271,7 @@
+     items.push({ id: 'general', icon: Settings2, labelKey: 'settings.general' });
+     items.push({ id: 'hotkeys', icon: Keyboard, labelKey: 'settings.hotkeys' });
+     items.push({ id: 'webserver', icon: Globe, labelKey: 'webserver.title' });
+-    if (projectInterface?.mirrorchyan_rid) {
++    if (projectInterface?.mirrorchyan_rid || projectInterface?.name === 'CangwuMaa') {
+       items.push({ id: 'update', icon: Download, labelKey: 'mirrorChyan.title' });
+     }
+     items.push(
+@@ -278,7 +279,7 @@
+       { id: 'about', icon: Info, labelKey: 'about.title' },
+     );
+     return items;
+-  }, [projectInterface?.mirrorchyan_rid, settingsSections.length]);
++  }, [projectInterface?.mirrorchyan_rid, projectInterface?.name, settingsSections.length]);
+ 
+   // 当前高亮的 section
+   const [activeSection, setActiveSection] = useState('appearance');
+@@ -497,7 +498,7 @@
+             <WebServerSection />
+ 
+             {/* MirrorChyan 更新设置 */}
+-            <UpdateSection />
++            {projectInterface?.name === 'CangwuMaa' ? <CangwuUpdateSection /> : <UpdateSection />}
+ 
+             {/* 调试 */}
+             <DebugSection />
+diff --git a/src/i18n/locales/en-US.ts b/src/i18n/locales/en-US.ts
+--- a/src/i18n/locales/en-US.ts
++++ b/src/i18n/locales/en-US.ts
+@@ -1,4 +1,18 @@
+ export default {
++  cangwuUpdate: {
++    title: 'Updates',
++    auto: 'Automatic updates',
++    autoHint: 'Check periodically while the assistant is open. Install and restart when tasks are idle. Manual updates remain available when disabled.',
++    version: 'Installed version: {{version}}',
++    check: 'Check for updates',
++    install: 'Update now',
++    sync: 'Sync resources',
++    cancel: 'Cancel',
++    syncHint: 'Restore recognition resources for the installed version, then restart. Task settings, appearance and exchange records are preserved.',
++    loading: 'Loading update settings…',
++    waitIdle: 'Waiting for tasks to finish before installing and restarting.',
++    saveFailed: 'Could not save task settings. No update was installed. Check folder permissions and try again.',
++  },
+   // Common
+   common: {
+     confirm: 'Confirm',
+diff --git a/src/i18n/locales/zh-CN.ts b/src/i18n/locales/zh-CN.ts
+--- a/src/i18n/locales/zh-CN.ts
++++ b/src/i18n/locales/zh-CN.ts
+@@ -1,4 +1,18 @@
+ export default {
++  cangwuUpdate: {
++    title: '更新',
++    auto: '自动更新',
++    autoHint: '助手运行期间定期检查新版本，下载后在任务空闲时安装并重启。关闭后仍可手动更新。',
++    version: '当前版本：{{version}}',
++    check: '检查更新',
++    install: '立即更新',
++    sync: '同步资源',
++    cancel: '取消',
++    syncHint: '重新下载当前版本的识别资源，同步完成后重启助手。保留任务配置、外观和兑换记录。',
++    loading: '正在读取更新设置……',
++    waitIdle: '等待任务空闲后安装并重启。',
++    saveFailed: '任务配置未能保存，本次未安装更新。请检查目录权限后重试。',
++  },
+   // 通用
+   common: {
+     confirm: '确定',
+diff --git a/src-tauri/src/commands/maa_agent.rs b/src-tauri/src/commands/maa_agent.rs
+--- a/src-tauri/src/commands/maa_agent.rs
++++ b/src-tauri/src/commands/maa_agent.rs
+@@ -526,6 +526,7 @@
+     controller_info: Option<ControllerInfo>,
+ ) -> Result<Vec<i64>, String> {
+     info!("start_tasks_impl called");
++    let _update_guard = super::cangwu_update::StartGuard::acquire(maa_state)?;
+ 
+     info!("instance_id: {}", instance_id);
+     info!("tasks: {:?}", tasks);
+diff --git a/src-tauri/src/commands/maa_core.rs b/src-tauri/src/commands/maa_core.rs
+--- a/src-tauri/src/commands/maa_core.rs
++++ b/src-tauri/src/commands/maa_core.rs
+@@ -1313,6 +1313,7 @@
+     pipeline_override: &str,
+     selected_task_id: Option<&str>,
+ ) -> Result<i64, String> {
++    let _update_guard = super::cangwu_update::StartGuard::acquire(state)?;
+     let mut instances = state.instances.lock().map_err(|e| e.to_string())?;
+     let instance = instances.get_mut(instance_id).ok_or("Instance not found")?;
+ 
+diff --git a/src-tauri/src/commands/mod.rs b/src-tauri/src/commands/mod.rs
+--- a/src-tauri/src/commands/mod.rs
++++ b/src-tauri/src/commands/mod.rs
+@@ -18,6 +18,7 @@
+ pub mod utils;
+ 
+ pub mod app_config;
++pub mod cangwu_update;
+ pub mod download;
+ pub mod file_ops;
+ pub mod maa_agent;
+diff --git a/src-tauri/src/lib.rs b/src-tauri/src/lib.rs
+--- a/src-tauri/src/lib.rs
++++ b/src-tauri/src/lib.rs
+@@ -216,6 +216,7 @@
+             Ok(())
+         })
+         .invoke_handler(tauri::generate_handler![
++            commands::cangwu_update::cangwu_update,
+             // Maa 核心命令
+             commands::maa_core::maa_init,
+             commands::maa_core::maa_set_resource_dir,
+diff --git a/src-tauri/src/web_server.rs b/src-tauri/src/web_server.rs
+--- a/src-tauri/src/web_server.rs
++++ b/src-tauri/src/web_server.rs
+@@ -207,6 +207,7 @@
+     let api_routes = Router::new()
+         // 配置 & 接口
+         .route("/interface", get(handle_get_interface))
++        .route("/cangwu/update", axum::routing::post(handle_cangwu_update))
+         .route(
+             "/config",
+             get(handle_get_config)
+@@ -439,6 +440,30 @@
+ // WebSocket 处理
+ // ============================================================================
+ 
++#[derive(serde::Deserialize)]
++struct CangwuUpdateRequest {
++    action: String,
++    enabled: Option<bool>,
++    #[serde(default)]
++    automatic: bool,
++}
++
++async fn handle_cangwu_update(
++    State(state): State<WebState>,
++    headers: HeaderMap,
++    Json(request): Json<CangwuUpdateRequest>,
++) -> impl IntoResponse {
++    // A foreign web page cannot use the local update bridge via permissive CORS.
++    if !is_same_origin_ws_request(&headers) {
++        return (StatusCode::FORBIDDEN, Json(serde_json::json!({"error": "Origin not allowed"}))).into_response();
++    }
++    match crate::commands::cangwu_update::run(state.app_handle, state.maa_state,
++        request.action, request.enabled, request.automatic).await {
++        Ok(value) => Json(value).into_response(),
++        Err(error) => (StatusCode::BAD_REQUEST, Json(serde_json::json!({"error": error}))).into_response(),
++    }
++}
++
+ /// GET /api/ws
+ /// WebSocket 升级入口；每个客户端连接后各自获得一个 broadcast Receiver
+ async fn handle_ws_upgrade(
+@@ -455,7 +480,6 @@
+         .into_response()
+ }
+ 
+-#[cfg(not(debug_assertions))]
+ fn is_same_origin_ws_request(headers: &HeaderMap) -> bool {
+     let Some(origin) = headers.get(header::ORIGIN).and_then(|v| v.to_str().ok()) else {
+         // 非浏览器客户端通常不带 Origin，保守兼容

@@ -259,13 +259,24 @@ def event(ctx: Context) -> None:
     ctx.result("活动扫荡", "completed", f"{config['stage']} 已扫荡 {actual} 次，体力 {before} → {after[0]}。", frame)
 
 
+def arena_page(frame: Frame) -> bool:
+    if frame.has("作战演习", region=(180, 0, 390, 90)):
+        return True
+    # The reward overlay can hide the page title. These independent arena
+    # controls remain readable in its dimmed background.
+    return (frame.has("大师赛", region=(0, 450, 150, 550), exact=True)
+            and frame.has("名人堂", region=(0, 650, 130, 719), exact=True)
+            and frame.has("防御记录", region=(1000, 70, 1250, 140), exact=True)
+            and frame.has("作战准备", region=(1000, 610, 1279, 710), exact=True))
+
+
 def arena_settle(ctx: Context, frame: Frame) -> Frame:
     if frame.has("代理完成", region=(790, 610, 1279, 710)) or frame.has("扫荡结算", region=(420, 35, 850, 130)):
         deadline, attempts, next_retry = min(ctx.deadline, time.monotonic() + 35), 0, 0.0
         while time.monotonic() < deadline:
             if frame.settlement_confirm() is not None:
                 break
-            if not frame.is_loading() and attempts < 3 and time.monotonic() >= next_retry and frame.has("作战演习") and frame.has("代理完成", region=(790, 610, 1279, 710)):
+            if not frame.is_loading() and attempts < 3 and time.monotonic() >= next_retry and arena_page(frame) and frame.has("代理完成", region=(790, 610, 1279, 710)):
                 ctx.text(frame, "代理完成", region=(790, 610, 1279, 710), reason="领取已完成的竞技场代理结果")
                 attempts += 1
                 next_retry = time.monotonic() + 2
@@ -275,13 +286,38 @@ def arena_settle(ctx: Context, frame: Frame) -> Frame:
         else:
             raise Halt("竞技场领取结果没有打开，已停止，不会再次提交代理。")
         ctx.save("arena_settlement", frame)
-        button = frame.settlement_confirm()
-        ctx.text(frame, button.text, region=(420, 560, 850, 670), exact=True, reason="确认竞技场结算")
-        frame = ctx.wait(lambda f: f.has("代理作战", region=(780, 610, 1010, 710)) and not f.has("扫荡结算"), "竞技场主页")
+        for attempt in range(2):
+            button = frame.settlement_confirm()
+            if button is None:
+                raise Halt("竞技场结算确认按钮已变化，停止领取。")
+            ctx.text(frame, button.text, region=(420, 560, 850, 670), exact=True,
+                     reason="确认竞技场结算" if not attempt else "竞技场结算未收起，核对原弹窗后补点一次")
+            until = min(ctx.deadline, time.monotonic() + 8)
+            while time.monotonic() < until:
+                frame = ctx.frame()
+                if (not frame.is_loading() and arena_page(frame)
+                        and frame.has("代理作战", region=(780, 610, 1010, 710))
+                        and not frame.has("扫荡结算", region=(420, 35, 850, 130))):
+                    return frame
+                ctx.pause(.6)
+            if (frame.settlement_confirm() is None or frame.has(
+                    "网络异常", "连接失败", "重新连接", "重新登录", "重试", region=(250, 180, 1080, 540))):
+                break
+        ctx.save("arena_settlement_no_response", frame)
+        raise Halt("竞技场结算确认未响应，已停止；不会再次提交代理。")
     return frame
 
 
 def arena(ctx: Context) -> None:
+    frame = ctx.frame()
+    if arena_page(frame) and (
+            frame.has("扫荡结算", region=(420, 35, 850, 130))
+            or frame.has("代理完成", "中止代理", region=(790, 610, 1279, 710))):
+        if not frame.has("扫荡结算", region=(420, 35, 850, 130)) and not frame.has("代理完成", region=(790, 610, 1279, 710)):
+            frame = ctx.wait(lambda f: f.has("代理完成", region=(790, 610, 1279, 710)), "已有的竞技场代理完成", timeout=360)
+        frame = arena_settle(ctx, frame)
+        ctx.result("竞技场", "completed", "已收取已有竞技场代理的结算，本轮不再提交新的代理。", frame)
+        return
     frame = ctx.home()
     ctx.text(frame, "演习", region=(1020, 540, 1279, 625), exact=True)
     frame = ctx.wait(lambda f: f.has("作战演习", region=(180, 0, 390, 90)), "竞技场")
@@ -365,11 +401,18 @@ def mail(ctx: Context) -> None:
         ctx.result("邮件", "already_done", "已检查领取全部，没有出现新的附件奖励。", frame)
 
 
+def friend_stamina(frame: Frame) -> tuple[int, int] | None:
+    if not frame.has("好友系统", region=(180, 0, 450, 100)):
+        return None
+    value = frame.number_fraction((420, 0, 750, 100))
+    return value if value and 0 <= value[0] <= value[1] and value[1] > 0 else None
+
+
 def friends(ctx: Context) -> None:
     frame = ctx.home()
     ctx.text(frame, "好友", region=(1140, 340, 1279, 450), exact=True)
-    frame = ctx.wait(lambda f: f.has("好友", region=(150, 0, 450, 100)), "好友页面")
-    before = frame.number_fraction((420, 0, 750, 100))
+    frame = ctx.wait(lambda f: f.has("好友系统", region=(180, 0, 450, 100)), "好友页面")
+    before = friend_stamina(frame)
     if before and before[0] >= before[1]:
         ctx.result("好友点赞", "already_done", f"今日好友体力已领取 {before[0]}/{before[1]}。", frame)
         return
@@ -381,9 +424,42 @@ def friends(ctx: Context) -> None:
         raise NeedsSetup("好友页面未识别到一键点赞按钮。")
     if before is None:
         raise Halt("无法读清今日好友体力领取数，停止操作。")
-    ctx.tap(frame, button.center, "给好友一键点赞")
-    frame = ctx.wait(lambda f: ((v := f.number_fraction((420, 0, 750, 100))) is not None and v[0] > before[0]) or f.has("没有可点赞", "暂无可点赞", "今日点赞已满"), "好友点赞完成")
-    ctx.result("好友点赞", "completed", "已完成一键点赞并核对好友体力。", frame)
+
+    def confirmed(screen: Frame) -> bool:
+        current = friend_stamina(screen)
+        if current is None or screen.is_loading():
+            return False
+        if current[1] != before[1] or current[0] < before[0]:
+            raise Halt("好友体力计数发生异常变化，已停止点赞。")
+        if current[0] > before[0]:
+            ctx.result("好友点赞", "completed", f"已完成一键点赞，好友体力 {before[0]}/{before[1]} → {current[0]}/{current[1]}。", screen)
+            return True
+        if screen.has("没有可点赞", "暂无可点赞", "今日点赞已满", "今日已全部点赞", region=(250, 200, 1080, 520)):
+            ctx.result("好友点赞", "already_done", "游戏提示当前没有可点赞的好友。", screen)
+            return True
+        return False
+
+    for attempt in range(2):
+        if attempt:
+            frame = ctx.frame()
+            if confirmed(frame):
+                return
+            if frame.is_loading() or friend_stamina(frame) != before or frame.reward() or frame.has(
+                "网络异常", "连接失败", "重新连接", "重新登录", "重试", region=(250, 180, 1080, 540)
+            ):
+                raise Halt("未能确认好友页仍可点赞，已停止补点。")
+            button = frame.find("一键点赞", "全部点赞", region=(0, 590, 300, 710), exact=True)
+            if button is None:
+                raise Halt("好友点赞按钮已变化，已停止补点。")
+        ctx.tap(frame, button.center, "给好友一键点赞" if not attempt else "好友点赞未响应，核对原页面后补点一次")
+        until = min(ctx.deadline, time.monotonic() + 8)
+        while time.monotonic() < until:
+            frame = ctx.frame()
+            if confirmed(frame):
+                return
+            ctx.pause(.6)
+    ctx.save("friends_no_response", frame)
+    raise Halt("好友点赞两次均未得到游戏确认，已停止后续任务；请检查游戏连接后重试。")
 
 
 MISSION_POINT_TIERS = {

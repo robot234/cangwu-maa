@@ -74,8 +74,8 @@ class CangwuTask(CustomAction):
                 frame = ctx.frame()
                 ctx.result(name, "completed", f"Maa 截图和 OCR 正常，识别到 {len(frame.words)} 段文字；" + ("当前为大厅。" if frame.is_home() else "当前页面请查看截图。"), frame)
             else:
-                # Expedition can resume its own verified repeat-dispatch dialog.
-                if key not in ("expedition", "armor", *SHOP_TASKS):
+                # These tasks reconcile their own pages before navigating away.
+                if key not in ("expedition", "armor", "arena", *SHOP_TASKS):
                     ctx.home()
                 task(ctx)
                 if ctx.actions:

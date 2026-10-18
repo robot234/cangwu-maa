@@ -15,9 +15,12 @@ def crystal_identity(frame: Frame, region: tuple[int, int, int, int], *, modal: 
     variants = {(item["id"], item.get("visual", item["id"]))
                 for shop in SHOPS for item in CATALOG[shop] if item["id"] in CRYSTALS}
     matches = set()
+    sold = not modal and frame.has("已售罄", "售罄", region=region, exact=True)
     for key, visual in sorted(variants):
-        path = ROOT / f"assets/item_{visual}_{'dialog' if modal else 'list'}.png"
-        if path.is_file() and template_match(frame, path, region, .85):
+        paths = [ROOT / f"assets/item_{visual}_{'dialog' if modal else 'list'}.png"]
+        if sold:
+            paths.append(ROOT / f"assets/item_{visual}_sold_list.png")
+        if any(path.is_file() and template_match(frame, path, region, .85) for path in paths):
             matches.add(key)
     return next(iter(matches)) if len(matches) == 1 else None
 
@@ -101,12 +104,12 @@ def shop_cards(frame: Frame) -> list[ShopCard]:
             if not sold:
                 continue
             # Sold-out overlays cover the artwork. This path can only skip a
-            # sold item; price/currency or an exact numeral must identify it.
+            # sold item; only a unique price/currency may replace the artwork.
+            # Roman numerals can lose a stroke under this overlay (III -> II,
+            # II -> I), so same-price crystals still require a visual match.
             candidates = [item for shop in SHOPS for item in CATALOG[shop]
                           if item["id"] in CRYSTALS and item["price"] == price and item["currency"] == currency]
             identities = {item["id"] for item in candidates}
-            if len(identities) != 1:
-                identities = {item["id"] for item in candidates if normalized(title.text) in names(item)}
             if len(identities) != 1:
                 continue
             crystal = identities.pop()
@@ -337,7 +340,7 @@ def exchange(ctx: Context, shop: str, *, preview_only: bool = False) -> None:
         if int(ctx.config["limits"]["max_actions"]) - ctx.actions < 30:
             skipped.append("本轮操作预算不足，剩余目标下次继续")
             break
-        frame, card = find_card(ctx, frame, item, forward_only=True)
+        frame, card = find_card(ctx, frame, item)
         if card is None:
             raise NeedsSetup(f"没有找到已核对的商品「{item['name']}」及对应币种／价格；可能已换商品，停止兑换。")
         if card.stock == 0:

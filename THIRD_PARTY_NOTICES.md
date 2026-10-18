@@ -7,7 +7,7 @@
 | PPOCR v5中文识别资源 | [MaaCommonAssets](https://github.com/MaaXYZ/MaaCommonAssets) | [MaaCommonAssets.LICENSE](licenses/MaaCommonAssets.LICENSE) |
 | Python（Windows 完整包） | [3.13.6 官方嵌入式发行版](https://www.python.org/downloads/release/python-3136/) | 完整包内 `.venv/Scripts/LICENSE.txt` |
 
-MXU 定制版的可执行程序、完整对应源码及构建说明可从 [MXU-Cangwu-source-and-runtime.zip](https://github.com/robot234/cangwu-maa/releases/download/v0.4.4/MXU-Cangwu-source-and-runtime.zip) 获取；仓库同时保留修改后的组件源码。
+MXU 定制版的可执行程序、完整对应源码及构建说明可从 [MXU-Cangwu-source-and-runtime.zip](https://github.com/robot234/cangwu-maa/releases/download/v0.4.5/MXU-Cangwu-source-and-runtime.zip) 获取；仓库同时保留修改后的组件和更新桥接源码。
 
 运行库不提交到源码仓库，Windows 完整包内包含运行库。版本、来源与文件校验值见 `DEPENDENCIES.json`；Python 依赖及传递依赖固定在 `requirements-windows.lock`，完整包保留各组件的许可证及 `.dist-info` 元信息。`PACKAGE.json` 列出包内文件与 SHA256。
 

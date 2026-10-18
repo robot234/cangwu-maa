@@ -238,7 +238,7 @@ class Context:
                 self.wait(lambda f: f.is_home(), "游戏大厅")
                 continue
             # A top-left back control is used only on identified in-game pages.
-            title = frame.find("指挥室", "作战演习", "邮件", "好友", "任务", "通行证", "限时活动", "商城系统", region=(180, 5, 450, 90))
+            title = frame.find("指挥室", "战斗副本", "作战演习", "邮件", "好友", "任务", "通行证", "限时活动", "商城系统", region=(180, 5, 450, 90))
             if title:
                 self.tap(frame, (25, 38), "点击游戏内返回按钮")
                 self.wait(lambda f: f.is_home() or not f.has(title.text, region=(180, 5, 450, 90)), "返回上一页")
