@@ -192,6 +192,8 @@ class Context:
         return frame
 
     def home(self) -> Frame:
+        from .startup import enter_game, signin_page, start_button
+
         for _ in range(8):
             frame = self.wait(lambda f: True, "页面加载完成")
             if frame.is_home():
@@ -205,10 +207,8 @@ class Context:
                 self.text(frame, button.text, region=(420, 560, 850, 670), exact=True, reason="关闭上次未收起的结算")
                 self.wait(lambda f: not f.has("扫荡结算", region=(420, 35, 850, 130)), "结算窗口关闭")
                 continue
-            if frame.has("TOUCH TO START"):
-                self.text(frame, "TOUCH TO START", reason="进入苍雾世界")
-                self.pause(2)
-                continue
+            if start_button(frame) is not None or signin_page(frame):
+                return enter_game(self, frame)
             if frame.all("活动公告", "游戏公告"):
                 self.tap(frame, (640, 692), "关闭登录公告")
                 continue

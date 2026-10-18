@@ -105,4 +105,5 @@ class Device:
         self.completed(self.controller.post_click_key(4), "返回")
 
     def launch(self) -> None:
+        self.check()
         self.completed(self.controller.post_start_app(f"{self.package}/{ACTIVITY}"), "启动游戏")

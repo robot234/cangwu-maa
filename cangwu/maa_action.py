@@ -11,6 +11,7 @@ from .runtime import Context, Halt, NeedsSetup, load_config
 from .tasks import TASKS
 from .feature_config import SHOPS, SHOP_TASKS
 from .vision import Vision
+from .startup import prepare_game
 
 
 def task_config(params: dict) -> dict:
@@ -34,6 +35,7 @@ class CangwuTask(CustomAction):
         self.started = time.monotonic()
         self.actions = 0
         self.failed = False
+        self.game_prepared = False
 
     def run(self, context, argv) -> bool:
         if self.failed:
@@ -50,6 +52,9 @@ class CangwuTask(CustomAction):
             ctx.vision = Vision(context)
             ctx.check()
             ctx.device.connect()
+            if key not in ("check", "inspect", "feature_preview") and not self.game_prepared:
+                prepare_game(ctx)
+                self.game_prepared = True
             if key == "inspect":
                 from .inspection import inspect_ui
                 inspect_ui(ctx, params)
