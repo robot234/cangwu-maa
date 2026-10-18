@@ -79,7 +79,7 @@ class Device:
 
     def require_game(self) -> None:
         if self.foreground() != self.package:
-            raise DeviceError("苍雾世界已离开前台，已停止点击；请切回游戏再运行。")
+            raise DeviceError("苍雾世界不在前台，已停止点击。请先进入游戏大厅，或勾选「开始游戏」后重新运行。")
 
     def screenshot(self) -> bytes:
         self.require_game()

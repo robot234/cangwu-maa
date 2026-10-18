@@ -1,0 +1,60 @@
+diff --git a/src/i18n/locales/en-US.ts b/src/i18n/locales/en-US.ts
+index 154e625..e2a2e81 100644
+--- a/src/i18n/locales/en-US.ts
++++ b/src/i18n/locales/en-US.ts
+@@ -630,6 +630,7 @@ export default {
+
+   // Welcome dialog
+   welcome: {
++    suppressUntilUpdate: 'Hide until the next update',
+     dismiss: 'Got it',
+     viewAgain: 'View welcome message',
+   },
+diff --git a/src/i18n/locales/ja-JP.ts b/src/i18n/locales/ja-JP.ts
+index 15e63a1..b80c0c8 100644
+--- a/src/i18n/locales/ja-JP.ts
++++ b/src/i18n/locales/ja-JP.ts
+@@ -629,6 +629,7 @@ export default {
+
+   // ウェルカムダイアログ
+   welcome: {
++    suppressUntilUpdate: '次の更新まで表示しない',
+     dismiss: '了解しました',
+     viewAgain: 'ウェルカムメッセージを表示',
+   },
+diff --git a/src/i18n/locales/ko-KR.ts b/src/i18n/locales/ko-KR.ts
+index c3bee79..a0bcddf 100644
+--- a/src/i18n/locales/ko-KR.ts
++++ b/src/i18n/locales/ko-KR.ts
+@@ -619,6 +619,7 @@ export default {
+
+   // 환영 대화상자
+   welcome: {
++    suppressUntilUpdate: '다음 업데이트까지 다시 표시하지 않기',
+     dismiss: '확인했습니다',
+     viewAgain: '환영 메시지 보기',
+   },
+diff --git a/src/i18n/locales/zh-CN.ts b/src/i18n/locales/zh-CN.ts
+index 3dca5fc..1ac9dec 100644
+--- a/src/i18n/locales/zh-CN.ts
++++ b/src/i18n/locales/zh-CN.ts
+@@ -608,6 +608,7 @@ export default {
+
+   // 欢迎弹窗
+   welcome: {
++    suppressUntilUpdate: '下次更新前不再弹出',
+     dismiss: '我知道了',
+     viewAgain: '查看欢迎信息',
+   },
+diff --git a/src/i18n/locales/zh-TW.ts b/src/i18n/locales/zh-TW.ts
+index f73ab27..465f364 100644
+--- a/src/i18n/locales/zh-TW.ts
++++ b/src/i18n/locales/zh-TW.ts
+@@ -604,6 +604,7 @@ export default {
+
+   // 欢迎彈窗
+   welcome: {
++    suppressUntilUpdate: '下次更新前不再顯示',
+     dismiss: '我知道了',
+     viewAgain: '查看歡迎資訊',
+   },

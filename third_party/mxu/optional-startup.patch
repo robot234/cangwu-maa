@@ -1,0 +1,31 @@
+diff --git a/src/stores/appStore.ts b/src/stores/appStore.ts
+index c90b581..3380404 100644
+--- a/src/stores/appStore.ts
++++ b/src/stores/appStore.ts
+@@ -398,14 +398,15 @@ export const useAppStore = create<AppState>()(
+       const instanceNumber = get().nextInstanceNumber;
+       const pi = get().projectInterface;
+
+-      // 只添加 default_check 为 true 的任务
++      // 苍雾的开始游戏任务始终显示；是否启用仍由 default_check 决定。
+       const defaultTasks: SelectedTask[] = [];
+       if (pi) {
+         // 获取默认控制器名称，用于检查任务兼容性
+         const defaultControllerName = pi.controller[0]?.name;
+
+         pi.task.forEach((task) => {
+-          if (!task.default_check) return;
++          const isCangwuStartup = pi.name === 'CangwuMaa' && task.name === 'startup';
++          if (!task.default_check && !isCangwuStartup) return;
+
+           // 检查任务是否支持默认控制器
+           const isControllerCompatible =
+@@ -418,7 +419,7 @@ export const useAppStore = create<AppState>()(
+           defaultTasks.push({
+             id: generateId(),
+             taskName: task.name,
+-            enabled: isControllerCompatible, // 不兼容默认控制器的任务不勾选
++            enabled: !!task.default_check && isControllerCompatible,
+             optionValues,
+             expanded: true, // 新建配置时自动展开所有任务
+           });

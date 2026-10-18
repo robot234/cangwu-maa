@@ -35,7 +35,6 @@ class CangwuTask(CustomAction):
         self.started = time.monotonic()
         self.actions = 0
         self.failed = False
-        self.game_prepared = False
 
     def run(self, context, argv) -> bool:
         if self.failed:
@@ -45,17 +44,18 @@ class CangwuTask(CustomAction):
         try:
             params = json.loads(argv.custom_action_param or "{}")
             key = params["task"]
-            name, task = (("功能预览" if key == "feature_preview" else "页面检查" if key == "inspect" else "检查连接"), None) if key in ("check", "inspect", "feature_preview") else next((name, fn) for task_key, name, fn in TASKS if task_key == key)
+            special = {"startup": "开始游戏", "feature_preview": "功能预览", "inspect": "页面检查", "check": "检查连接"}
+            name, task = (special[key], None) if key in special else next((name, fn) for task_key, name, fn in TASKS if task_key == key)
             ctx = Context(task_config(params), threading.Event(), lambda line: print(line, flush=True), maa=context)
             ctx.deadline = self.started + int(ctx.config["limits"]["run_minutes"]) * 60
             ctx.config["limits"]["max_actions"] = max(0, int(ctx.config["limits"]["max_actions"]) - self.actions)
             ctx.vision = Vision(context)
             ctx.check()
             ctx.device.connect()
-            if key not in ("check", "inspect", "feature_preview") and not self.game_prepared:
+            if key == "startup":
                 prepare_game(ctx)
-                self.game_prepared = True
-            if key == "inspect":
+                ctx.result(name, "completed", "游戏已就绪，继续执行后续勾选任务。", ctx.last)
+            elif key == "inspect":
                 from .inspection import inspect_ui
                 inspect_ui(ctx, params)
             elif key == "feature_preview":

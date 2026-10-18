@@ -14,9 +14,9 @@
     },
     {
       "name": "MXU",
-      "version": "2.7.1",
-      "source": "https://github.com/MistEO/MXU/releases/download/v2.7.1/MXU-win-x86_64-v2.7.1.zip",
-      "sha256": "825a62af7a344a7a47adca09d1414128e6f53a222a11cdf456f08d2e83d31724"
+      "version": "2.7.1+cangwu.1",
+      "source": "https://github.com/robot234/cangwu-maa/releases/download/v0.4.4/MXU-Cangwu-source-and-runtime.zip",
+      "sha256": "9f43ace55a20bb006d2257d8e59e8c68948eaccb177f759d8f4075e0bb1308db"
     },
     {
       "name": "MaaFramework source",
@@ -38,7 +38,7 @@
     }
   ],
   "installed_files": {
-    "app/mxu.exe": "1b5487aa2442062a489e20134a82f946f76f57e733a8d8d284c3c76aaf8053e5",
+    "app/mxu.exe": "5ba2491c385486d1002d5ff30fd9d4e4e0ae1b43e847751899ecc2af79832afb",
     "app/maafw/DirectML.dll": "9c9e6d822561c6c41b90e6994b3e8857cf1d66dbfb1e0c4c799c7c89b4e92da1",
     "app/maafw/dxcompiler.dll": "9b5e10ed756c461b4ec2c83a99f1d6ace20e97826e9c0b0e966b7b1cd6f2aec6",
     "app/maafw/dxil.dll": "cbcfe883a09fd0ca1f98abdf3a9553b560895e3283a136da82a8381253a169df",

@@ -21,6 +21,24 @@
     },
     "action": "DoNothing"
   },
+  "CangwuStartup": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "startup"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：开始游戏",
+      "Node.Action.Succeeded": "完成：开始游戏",
+      "Node.Action.Failed": "已停止：开始游戏，请查看日志"
+    }
+  },
   "CangwuBase": {
     "recognition": "DirectHit",
     "action": {

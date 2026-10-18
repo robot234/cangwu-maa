@@ -64,6 +64,45 @@ def ui_running() -> bool:
         return False
 
 
+def ensure_startup_task() -> None:
+    """Add the new unchecked task to existing MXU profiles before opening the UI."""
+    import uuid
+
+    path = ROOT / "app/config/mxu-CangwuMaa.json"
+    if not path.is_file():
+        return
+    before = path.read_bytes()
+    config = json.loads(before.decode("utf-8-sig"))
+    instances = config.get("instances", [])
+    if not isinstance(instances, list):
+        raise RuntimeError("助手任务配置格式异常，原配置未改动。")
+    changed = False
+    for instance in instances:
+        tasks = instance.get("tasks", [])
+        if not isinstance(tasks, list) or not all(isinstance(task, dict) for task in tasks):
+            raise RuntimeError("助手任务配置格式异常，原配置未改动。")
+        if any(task.get("taskName") == "startup" for task in tasks):
+            continue
+        tasks.insert(0, {"id": str(uuid.uuid4()), "taskName": "startup", "enabled": False,
+                         "enabledByController": {instance.get("controllerName", "MuMu"): False},
+                         "optionValues": {}, "expanded": False})
+        instance["tasks"] = tasks
+        changed = True
+    if not changed:
+        return
+    backups = ROOT / "runtime/backups"
+    backups.mkdir(parents=True, exist_ok=True)
+    (backups / f"mxu-before-startup-{uuid.uuid4().hex}.json").write_bytes(before)
+    temporary = path.with_name(path.name + f".{uuid.uuid4().hex}.tmp")
+    try:
+        temporary.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        if path.read_bytes() != before:
+            raise RuntimeError("任务配置刚刚发生变化，请关闭助手后再重新启动。")
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="苍雾世界 Maa 助手")
     parser.add_argument("--stop", action="store_true")
@@ -97,6 +136,7 @@ def main() -> int:
     exe = ROOT / "app/mxu.exe"
     if not exe.is_file():
         raise FileNotFoundError("缺少 MXU 客户端，请查看 README.md 的环境准备说明。")
+    ensure_startup_task()
     process = subprocess.Popen([str(exe)], cwd=exe.parent, env=env, creationflags=subprocess.CREATE_NO_WINDOW)
     (ROOT / "runtime/ui.pid").write_text(str(process.pid), encoding="ascii")
     return 0

@@ -192,7 +192,7 @@ class Context:
         return frame
 
     def home(self) -> Frame:
-        from .startup import enter_game, signin_page, start_button
+        from .startup import signin_page, start_button
 
         for _ in range(8):
             frame = self.wait(lambda f: True, "页面加载完成")
@@ -208,7 +208,7 @@ class Context:
                 self.wait(lambda f: not f.has("扫荡结算", region=(420, 35, 850, 130)), "结算窗口关闭")
                 continue
             if start_button(frame) is not None or signin_page(frame):
-                return enter_game(self, frame)
+                raise NeedsSetup("当前仍在游戏开始页或签到页。请先进入大厅，或勾选「开始游戏」后重新运行。")
             if frame.all("活动公告", "游戏公告"):
                 self.tap(frame, (640, 692), "关闭登录公告")
                 continue
