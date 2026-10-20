@@ -271,9 +271,15 @@ def arena_page(frame: Frame) -> bool:
 
 
 def arena_settle(ctx: Context, frame: Frame) -> Frame:
-    if frame.has("代理完成", region=(790, 610, 1279, 710)) or frame.has("扫荡结算", region=(420, 35, 850, 130)):
-        deadline, attempts, next_retry = min(ctx.deadline, time.monotonic() + 35), 0, 0.0
-        while time.monotonic() < deadline:
+    if not (frame.has("代理完成", region=(790, 610, 1279, 710)) or frame.has("扫荡结算", region=(420, 35, 850, 130))):
+        return frame
+    deadline = min(ctx.deadline, time.monotonic() + 180)
+    # Refresh can close a result dialog while more completed results remain.
+    # Drain only that existing proxy; never click the new-proxy button here.
+    for receipt in range(16):
+        opening_deadline = min(deadline, time.monotonic() + 35)
+        attempts, next_retry = 0, 0.0
+        while time.monotonic() < opening_deadline:
             if frame.settlement_confirm() is not None:
                 break
             if not frame.is_loading() and attempts < 3 and time.monotonic() >= next_retry and arena_page(frame) and frame.has("代理完成", region=(790, 610, 1279, 710)):
@@ -292,20 +298,39 @@ def arena_settle(ctx: Context, frame: Frame) -> Frame:
                 raise Halt("竞技场结算确认按钮已变化，停止领取。")
             ctx.text(frame, button.text, region=(420, 560, 850, 670), exact=True,
                      reason="确认竞技场结算" if not attempt else "竞技场结算未收起，核对原弹窗后补点一次")
-            until = min(ctx.deadline, time.monotonic() + 8)
+            until = min(deadline, time.monotonic() + 8)
             while time.monotonic() < until:
                 frame = ctx.frame()
                 if (not frame.is_loading() and arena_page(frame)
-                        and frame.has("代理作战", region=(780, 610, 1010, 710))
-                        and not frame.has("扫荡结算", region=(420, 35, 850, 130))):
-                    return frame
+                        and not frame.has("扫荡结算", region=(420, 35, 850, 130))
+                        and not frame.reward()
+                        and not frame.has("网络异常", "连接失败", "重新连接", "重新登录", "重试", region=(250, 180, 1080, 540))):
+                    if frame.has("代理作战", region=(780, 610, 1010, 710)):
+                        return frame
+                    if frame.has("代理完成", region=(790, 610, 1279, 710)):
+                        break
                 ctx.pause(.6)
-            if (frame.settlement_confirm() is None or frame.has(
-                    "网络异常", "连接失败", "重新连接", "重新登录", "重试", region=(250, 180, 1080, 540))):
-                break
+            else:
+                if (frame.settlement_confirm() is None or frame.has(
+                        "网络异常", "连接失败", "重新连接", "重新登录", "重试", region=(250, 180, 1080, 540))):
+                    break
+                continue
+            # The recognized result dialog closed. Reopen only the remaining
+            # completed results instead of retrying a stale confirmation.
+            ctx.log(f"竞技场第 {receipt + 1} 批结算已收起，继续核对剩余代理结果。")
+            break
+        else:
+            ctx.save("arena_settlement_no_response", frame)
+            raise Halt("竞技场结算确认未响应，已停止；不会再次提交代理。")
+        if (frame.settlement_confirm() is None and not frame.is_loading() and arena_page(frame)
+                and frame.has("代理完成", region=(790, 610, 1279, 710))
+                and not frame.reward()
+                and not frame.has("网络异常", "连接失败", "重新连接", "重新登录", "重试", region=(250, 180, 1080, 540))):
+            continue
         ctx.save("arena_settlement_no_response", frame)
         raise Halt("竞技场结算确认未响应，已停止；不会再次提交代理。")
-    return frame
+    ctx.save("arena_settlement_remaining", frame)
+    raise Halt("竞技场结算仍有未领取结果，已达到本次核对上限；不会再次提交代理。")
 
 
 def arena(ctx: Context) -> None:
