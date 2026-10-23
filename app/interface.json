@@ -2,7 +2,7 @@
   "interface_version": 2,
   "name": "CangwuMaa",
   "label": "苍雾世界 · 日常助手",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "description.md",
   "welcome": "welcome.md",
   "icon": "icon.png",
@@ -911,6 +911,16 @@
         "reserve_stamina"
       ],
       "description": "扫荡「闪耀之始-7」，每次 42 体力。可设置保留体力，只消耗现有体力；不足一次就跳过。"
+    },
+    {
+      "name": "endurance",
+      "label": "续航计划（限时）",
+      "entry": "CangwuEndurance",
+      "group": [
+        "领奖"
+      ],
+      "default_check": true,
+      "description": "活动合集 → 续航计划：一键领取累计体力消耗奖励，不消耗任何资源。应放在活动扫荡之后；活动结束、找不到续航计划时自动跳过。"
     },
     {
       "name": "arena",

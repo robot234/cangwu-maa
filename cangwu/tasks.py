@@ -9,7 +9,7 @@ import numpy as np
 from .runtime import CST, ROOT, Context, Halt, NeedsSetup
 from .vision import Frame, Word, normalized, template_match
 
-CLAIM_ALL = ("一键领取", "键领取", "全部领取", "一键收取", "领取全部")
+CLAIM_ALL = ("一键领取", "-键领取", "键领取", "全部领取", "一键收取", "领取全部")
 
 
 def integer(frame: Frame, region: tuple[int, int, int, int]) -> int | None:
@@ -19,6 +19,19 @@ def integer(frame: Frame, region: tuple[int, int, int, int]) -> int | None:
             if re.fullmatch(r"\d+", normalized(word.text)):
                 return int(normalized(word.text))
     return None
+
+
+# Actions kept back after a stamina/ticket spend for its settlement, the
+# after-spend check and returning to the lobby.
+EVENT_RESERVE = 15
+ARENA_RESERVE = 25
+
+
+def spend_budget(ctx: Context, steps: int, reserve: int, what: str) -> None:
+    remaining = int(ctx.config["limits"]["max_actions"]) - int(ctx.actions)
+    if remaining < steps + reserve:
+        raise Halt(f"本轮剩余操作次数 {remaining} 次，不够完整走完{what}（约需 {steps + reserve} 次）；"
+                   "没有开始，也没有消耗。")
 
 
 def sweep_budget(frame: Frame, cost: int, reserve: int) -> tuple[int, int, int]:
@@ -229,9 +242,12 @@ def event(ctx: Context) -> None:
     if count == 0:
         ctx.result("活动扫荡", "already_done", f"体力 {stamina[0]}，不足一次 {cost}；没有购买体力。", frame)
         return
+    use_max = reserve == 0 and count < 100
+    # Open the sweep dialog only if the whole spend can also be settled and verified.
+    spend_budget(ctx, 2 + (1 if use_max else count), EVENT_RESERVE, "活动扫荡")
     ctx.text(frame, "扫荡", region=(790, 600, 970, 710), exact=True)
     frame = ctx.wait(lambda f: f.all("扫荡次数", "开始扫荡"), "扫荡次数设置")
-    if reserve == 0 and count < 100:
+    if use_max:
         ctx.text(frame, "MAX", region=(755, 200, 845, 270), exact=True)
     else:
         ctx.text(frame, "MIN", region=(755, 290, 845, 365), exact=True)
@@ -257,6 +273,58 @@ def event(ctx: Context) -> None:
     if after is None or not expected <= after[0] <= expected + 2:
         raise Halt("扫荡后体力未能核对；已停止，不会重复提交扫荡。")
     ctx.result("活动扫荡", "completed", f"{config['stage']} 已扫荡 {actual} 次，体力 {before} → {after[0]}。", frame)
+
+
+ENDURANCE_TAB = "续航计划"
+ENDURANCE_TABS = (0, 150, 215, 650)
+
+
+def endurance_page(frame: Frame) -> bool:
+    return (frame.has("累计体力消耗", region=(560, 40, 900, 100))
+            and frame.has(ENDURANCE_TAB, region=ENDURANCE_TABS, exact=True)
+            and not frame.reward())
+
+
+def endurance(ctx: Context) -> None:
+    """Limited-time 续航计划: claim stamina-spend milestones; skip once the event is gone."""
+    frame = ctx.home()
+    ctx.text(frame, "活动", region=(1150, 170, 1279, 260), exact=True, reason="打开活动合集")
+    frame = ctx.wait(lambda f: f.activity_hub(), "活动合集页面")
+    tab = frame.find(ENDURANCE_TAB, region=ENDURANCE_TABS, exact=True)
+    # The tab column may scroll; look both ways before deciding the event ended.
+    for start, end in (((105, 300), (105, 600)), ((105, 600), (105, 250))):
+        if tab is not None:
+            break
+        ctx.swipe(frame, start, end, "翻动活动列表，查找续航计划", duration=600)
+        frame = ctx.wait(lambda f: f.activity_hub(), "活动合集页面")
+        tab = frame.find(ENDURANCE_TAB, region=ENDURANCE_TABS, exact=True)
+    if tab is None:
+        ctx.result("续航计划", "already_done", "活动合集里没有续航计划，限时活动可能已结束，跳过。", frame)
+        return
+    ctx.tap(frame, tab.center, "切换到续航计划")
+    frame = ctx.wait(endurance_page, "续航计划任务列表")
+    spent = frame.find("累计体力消耗", region=(560, 40, 900, 100))
+    progress = normalized(spent.text).replace("累计体力消耗", "") if spent else ""
+    ctx.save("endurance_before", frame)
+    button = frame.find(*CLAIM_ALL, region=(1040, 620, 1279, 710), exact=True)
+    if button is None:
+        raise NeedsSetup("续航计划页面没有识别到一键领取按钮，已保留截图。")
+    # The disabled and enabled button share the page's amber tint, so tap and
+    # judge by the outcome; the claim is free and an empty tap changes nothing.
+    ctx.tap(frame, button.center, "续航计划：一键领取", pause=.6)
+    claimed = False
+    until = time.monotonic() + 4
+    while time.monotonic() < until:
+        frame = ctx.frame()
+        if frame.reward():
+            claimed = True
+            frame = ctx.dismiss_reward(frame)
+            break
+        ctx.pause(.5)
+    frame = ctx.wait(endurance_page, "续航计划任务列表")
+    total = f"累计体力消耗 {progress}；" if progress else ""
+    ctx.result("续航计划", "completed" if claimed else "already_done",
+               total + ("已领取达成的体力消耗奖励。" if claimed else "当前没有新达成的奖励可领。"), frame)
 
 
 def arena_page(frame: Frame) -> bool:
@@ -359,6 +427,7 @@ def arena(ctx: Context) -> None:
     if count == 0:
         ctx.result("竞技场", "already_done", f"现有票 {tickets[0]}，本次上限 {maximum}；没有购买次数。", frame)
         return
+    spend_budget(ctx, 2 + (1 if count == tickets[0] else count), ARENA_RESERVE, "竞技场代理")
     ctx.text(frame, "代理作战", region=(780, 610, 1010, 710), exact=True)
     frame = ctx.wait(lambda f: f.all("代理次数", "代理消耗", "开始代理"), "竞技场代理次数")
     if count == tickets[0]:
@@ -623,4 +692,4 @@ def armor(ctx: Context) -> None:
     run(ctx)
 
 
-TASKS = [("base", "指挥室收菜", base), ("expedition", "远征", expedition), ("mail", "邮件", mail), ("friends", "好友", friends), ("free_gifts", "首页推荐免费礼包", free_gifts), ("shop_elite", "精英商店", elite_shop), ("shop_logistics", "后勤商店", logistics_shop), ("shop_union", "联合商店", union_shop), ("shop_master", "大师商店", master_shop), ("armor", "装甲进阶", armor), ("event", "活动扫荡", event), ("arena", "竞技场", arena), ("missions", "任务领奖", missions), ("pass", "通行证", battle_pass)]
+TASKS = [("base", "指挥室收菜", base), ("expedition", "远征", expedition), ("mail", "邮件", mail), ("friends", "好友", friends), ("free_gifts", "首页推荐免费礼包", free_gifts), ("shop_elite", "精英商店", elite_shop), ("shop_logistics", "后勤商店", logistics_shop), ("shop_union", "联合商店", union_shop), ("shop_master", "大师商店", master_shop), ("armor", "装甲进阶", armor), ("event", "活动扫荡", event), ("endurance", "续航计划", endurance), ("arena", "竞技场", arena), ("missions", "任务领奖", missions), ("pass", "通行证", battle_pass)]

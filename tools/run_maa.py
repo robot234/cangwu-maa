@@ -44,7 +44,7 @@ def main() -> int:
         Device.completed(controller.post_connection(), "连接 MuMu")
         tasker = Tasker()
         tasker.bind(resource, controller)
-        entries = {"check": "CangwuCheck", "base": "CangwuBase", "expedition": "CangwuExpedition", "mail": "CangwuMail", "friends": "CangwuFriends", "event": "CangwuEvent", "arena": "CangwuArena", "missions": "CangwuMissions", "pass": "CangwuPass"}
+        entries = {"check": "CangwuCheck", "base": "CangwuBase", "expedition": "CangwuExpedition", "mail": "CangwuMail", "friends": "CangwuFriends", "event": "CangwuEvent", "endurance": "CangwuEndurance", "arena": "CangwuArena", "missions": "CangwuMissions", "pass": "CangwuPass"}
         for key in args.tasks.split(","):
             if key not in entries:
                 raise ValueError(f"未知任务：{key}")

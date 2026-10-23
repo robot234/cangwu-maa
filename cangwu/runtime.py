@@ -243,6 +243,10 @@ class Context:
                 self.tap(frame, (25, 38), "点击游戏内返回按钮")
                 self.wait(lambda f: f.is_home() or not f.has(title.text, region=(180, 5, 450, 90)), "返回上一页")
                 continue
+            if frame.activity_hub():
+                self.tap(frame, (25, 38), "离开活动合集")
+                self.wait(lambda f: f.is_home() or not f.activity_hub(), "返回上一页")
+                continue
             self.save("unknown_page", frame)
             raise Halt("当前页面未识别。请手动回到苍雾世界大厅，再点击开始。")
         raise Halt("连续返回后仍未到达大厅，已停止操作。")

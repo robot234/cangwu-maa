@@ -19,6 +19,7 @@
     "shop_master": false,
     "armor": false,
     "event": true,
+    "endurance": true,
     "arena": true,
     "missions": true,
     "pass": true
@@ -40,8 +41,8 @@
     "missions": ["新人驾驶员培养协助", "新人驾驶员培养协助-攻击"]
   },
   "limits": {
-    "run_minutes": 20,
-    "max_actions": 200,
+    "run_minutes": 45,
+    "max_actions": 500,
     "page_timeout": 35
   }
 }

@@ -77,19 +77,23 @@ def enter_game(ctx: Context, first: Frame | None = None, *, timeout: float = 120
     raise Halt("等待游戏进入大厅超时。请检查登录、更新或网络提示后重新开始任务。")
 
 
+def prepare_foreground(ctx: Context) -> None:
+    frame = ctx.frame()
+    if message := manual_step(frame):
+        ctx.save("startup_manual_step", frame)
+        raise NeedsSetup(message)
+    if frame.reward():
+        return
+    if start_button(frame) is not None or startup_loading(frame) or signin_page(frame):
+        enter_game(ctx, frame)
+    # Resuming a background game can restore a shop or pending receipt too.
+    # Let that page's task reconcile it before any navigation or repeat input.
+
+
 def prepare_game(ctx: Context, *, foreground_timeout: float = 25) -> None:
     ctx.check()
     if ctx.device.foreground() == ctx.device.package:
-        frame = ctx.frame()
-        if message := manual_step(frame):
-            ctx.save("startup_manual_step", frame)
-            raise NeedsSetup(message)
-        if frame.reward():
-            return
-        if start_button(frame) is not None or startup_loading(frame) or signin_page(frame):
-            enter_game(ctx, frame)
-        # Leave existing in-game pages intact so expedition, shop, and armor
-        # tasks can reconcile an unfinished operation before navigating away.
+        prepare_foreground(ctx)
         return
     ctx.log("正在打开苍雾世界。")
     ctx.check()
@@ -103,7 +107,7 @@ def prepare_game(ctx: Context, *, foreground_timeout: float = 25) -> None:
         except DeviceError:
             foreground = None
         if foreground == ctx.device.package:
-            enter_game(ctx)
+            prepare_foreground(ctx)
             return
         ctx.pause(.5)
     raise Halt("游戏尚未进入前台。请检查游戏是否需要登录，再重新开始任务。")

@@ -34,13 +34,18 @@ class CangwuTask(CustomAction):
         super().__init__()
         self.started = time.monotonic()
         self.actions = 0
+        # failed: stop every later entry. recover: the previous entry failed
+        # on its own, so return to the lobby before the next entry continues.
         self.failed = False
+        self.recover = False
 
     def run(self, context, argv) -> bool:
         if self.failed:
             print("上一个任务已停止，本轮后续任务已跳过。", flush=True)
             return False
         ctx = None
+        key = None
+        recovering = False
         try:
             params = json.loads(argv.custom_action_param or "{}")
             key = params["task"]
@@ -52,6 +57,12 @@ class CangwuTask(CustomAction):
             ctx.vision = Vision(context)
             ctx.check()
             ctx.device.connect()
+            if self.recover and key != "check":
+                recovering = True
+                ctx.log("上一个任务没有完成，先回到大厅再继续后面的任务。")
+                ctx.home()
+                recovering = False
+                self.recover = False
             if key == "startup":
                 prepare_game(ctx)
                 ctx.result(name, "completed", "游戏已就绪，继续执行后续勾选任务。", ctx.last)
@@ -83,9 +94,9 @@ class CangwuTask(CustomAction):
             ctx.finish("completed")
             return True
         except Exception as exc:
-            self.failed = True
             if ctx is not None:
                 stopped = ctx.stop.is_set() or ctx.stop_file.exists() or context.tasker.stopping
+                exhausted = time.monotonic() >= ctx.deadline or ctx.actions >= int(ctx.config["limits"]["max_actions"])
                 status = "stopped" if stopped else "needs_configuration" if isinstance(exc, NeedsSetup) else "failed"
                 ctx.result("任务停止", status, str(exc))
                 ctx.finish(status)
@@ -93,8 +104,17 @@ class CangwuTask(CustomAction):
                 print(f"任务参数错误：{exc}", flush=True)
             if not isinstance(exc, (Halt, NeedsSetup, DeviceError)):
                 traceback.print_exc()
-            # MXU may submit all entries up front. Keep failure sticky for the
-            # lifetime of this Agent, so subsequent entries perform no input.
+            # MXU may submit all entries up front. A user stop, lost device,
+            # failed startup, exhausted budget, or failed lobby recovery stays
+            # sticky for this Agent, so later entries perform no input. Any
+            # other single-task failure lets later entries continue from the
+            # lobby; per-task ledgers still block repeating unconfirmed input.
+            if (ctx is None or stopped or exhausted or recovering or key == "startup"
+                    or isinstance(exc, DeviceError)):
+                self.failed = True
+            else:
+                self.recover = True
+                print("这一项没有完成；后面的任务会先回到大厅再继续。", flush=True)
             return False
         finally:
             if ctx is not None:

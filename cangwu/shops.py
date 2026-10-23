@@ -18,6 +18,10 @@ def crystal_identity(frame: Frame, region: tuple[int, int, int, int], *, modal: 
     sold = not modal and frame.has("已售罄", "售罄", region=region, exact=True)
     for key, visual in sorted(variants):
         paths = [ROOT / f"assets/item_{visual}_{'dialog' if modal else 'list'}.png"]
+        if not modal:
+            # The logistics shop renders crystal cards on a different card
+            # background, which lowers the elite-shop list template's score.
+            paths.append(ROOT / f"assets/item_{visual}_logistics_list.png")
         if sold:
             paths.append(ROOT / f"assets/item_{visual}_sold_list.png")
         if any(path.is_file() and template_match(frame, path, region, .85) for path in paths):
@@ -78,6 +82,14 @@ def shop_cards(frame: Frame) -> list[ShopCard]:
                   and x - 115 <= word.center[0] <= x + 135
                   and 390 + row * 253 <= word.center[1] <= 435 + row * 253
                   and re.fullmatch(r"\d+", normalized(word.text))]
+        if not prices and frame.vision is not None:
+            # A sold-out overlay can merge the dimmed currency icon into the
+            # digits (2200 -> "*2200" at low confidence). Re-read only this
+            # card's price strip at higher scale; the gates stay digit-only.
+            region = (max(280, x - 115), 385 + row * 253, min(1280, x + 135), 440 + row * 253)
+            prices = [word for word in frame.vision.region_words(frame, region) if word.confidence >= .9
+                      and 390 + row * 253 <= word.center[1] <= 435 + row * 253
+                      and re.fullmatch(r"\d+", normalized(word.text))]
         stock = [match[1] for word in frame.words if word.confidence >= .85
                  and x - 90 <= word.center[0] <= x + 145
                  and 230 + row * 253 <= word.center[1] <= 270 + row * 253
@@ -156,10 +168,27 @@ def open_shop(ctx: Context, shop: str) -> Frame:
     raise NeedsSetup("没有找到商店入口「" + label + "」，停止兑换。")
 
 
-def find_card(ctx: Context, frame: Frame, item: dict, *, forward_only: bool = False, allow_sold: bool = False) -> tuple[Frame, ShopCard | None]:
-    # Each search begins at the left edge. Stop scrolling when the visual list
-    # stabilizes, rather than depending on last session's scroll position.
-    for direction in (("right",) if forward_only else ("left", "right")):
+@dataclass
+class ShopScan:
+    # The list edge the current page is confirmed to sit at ("left" is the
+    # list start), or None once a swipe or purchase makes it unknown.
+    edge: str | None = None
+
+
+def find_card(ctx: Context, frame: Frame, item: dict, *, forward_only: bool = False, allow_sold: bool = False,
+              scan: ShopScan | None = None, prefer: str = "left") -> tuple[Frame, ShopCard | None]:
+    # Stop scrolling when the visual list stabilizes, rather than depending on
+    # last session's scroll position. Direction only orders the search: both
+    # directions are still scanned before an item is reported missing.
+    if forward_only:
+        order = ("right",)
+    else:
+        first = prefer
+        if scan is not None and scan.edge in ("left", "right"):
+            # Already at an edge: scrolling further that way only re-confirms it.
+            first = "right" if scan.edge == "left" else "left"
+        order = (first, "right" if first == "left" else "left")
+    for direction in order:
         previous = None
         for _ in range(7):
             card = matching_card(frame, item)
@@ -179,10 +208,14 @@ def find_card(ctx: Context, frame: Frame, item: dict, *, forward_only: bool = Fa
             ctx.save(f"search_{item['id']}", frame)
             signature = tuple((c.name, c.price, c.stock, c.word.center[0] // 10) for c in shop_cards(frame))
             if previous == signature and signature:
+                if scan is not None:
+                    scan.edge = direction
                 break
             previous = signature
             start, end = ((530, 430), (1050, 430)) if direction == "left" else ((1050, 430), (530, 430))
             ctx.swipe(frame, start, end, f"查找兑换商品：{item['name']}", duration=1200)
+            if scan is not None:
+                scan.edge = None
             frame = ctx.wait(lambda f: f.exchange_list()
                              and not f.has("是否购买", region=(350, 140, 850, 225)), "商店商品列表")
     return frame, None
@@ -325,10 +358,12 @@ def exchange(ctx: Context, shop: str, *, preview_only: bool = False) -> None:
         ctx.result(label, "already_done", f"勾选商品{period_label}目标已完成，不重复兑换。")
         return
     frame = open_shop(ctx, shop)
+    scan = ShopScan()
     previous = None
     for _ in range(6):
         signature = tuple((c.name, c.price, c.word.center[0] // 10) for c in shop_cards(frame))
         if previous == signature and signature:
+            scan.edge = "left"
             break
         previous = signature
         ctx.swipe(frame, (530, 430), (1050, 430), "复位到商店商品列表起点", duration=1200)
@@ -340,7 +375,9 @@ def exchange(ctx: Context, shop: str, *, preview_only: bool = False) -> None:
         if int(ctx.config["limits"]["max_actions"]) - ctx.actions < 30:
             skipped.append("本轮操作预算不足，剩余目标下次继续")
             break
-        frame, card = find_card(ctx, frame, item)
+        # A covered currency icon is acceptable only for an identified sold-out
+        # card, which is skipped below and can never reach the purchase path.
+        frame, card = find_card(ctx, frame, item, allow_sold=True, scan=scan)
         if card is None:
             raise NeedsSetup(f"没有找到已核对的商品「{item['name']}」及对应币种／价格；可能已换商品，停止兑换。")
         if card.stock == 0:
@@ -373,8 +410,14 @@ def exchange(ctx: Context, shop: str, *, preview_only: bool = False) -> None:
         frame = ctx.dismiss_reward(frame)
         frame = ctx.wait(lambda f: f.exchange_list()
                          and not f.has("是否购买", region=(350, 140, 850, 225)), "兑换后商品列表")
+        # The game may re-sort the list after a purchase.
+        scan.edge = None
         if preview.stock is not None:
-            frame, after = find_card(ctx, frame, item, allow_sold=preview.stock == actual)
+            sold_out = preview.stock == actual
+            # A card that just sold out moves to the sold-out group at the end
+            # of the list, so look rightward first.
+            frame, after = find_card(ctx, frame, item, allow_sold=sold_out, scan=scan,
+                                     prefer="right" if sold_out else "left")
             if after is None or after.stock != preview.stock - actual:
                 raise Halt("兑换奖励已出现，但商品剩余数量未核对成功；记录保留待核对，不会自动再兑。")
         state["done"][item["id"]] = state["done"].get(item["id"], 0) + actual

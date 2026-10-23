@@ -71,6 +71,14 @@ class Frame:
     def reward(self) -> bool:
         return self.has("获得资源", "获得道具", "获得奖励", "奖励获得", region=(390, 160, 900, 350))
 
+    def activity_hub(self) -> bool:
+        """Lobby 活动 collection: an untitled page with a left column of event tabs."""
+        if self.is_home() or self.exchange_list() or self.reward():
+            return False
+        tabs = [w for w in self.words if w.confidence >= .9 and w.center[0] <= 210
+                and 150 <= w.center[1] <= 640 and 3 <= len(normalized(w.text)) <= 8]
+        return len(tabs) >= 3
+
     def settlement_confirm(self) -> Word | None:
         if self.is_loading() or not self.has("扫荡结算", region=(420, 35, 850, 130)):
             return None
@@ -94,7 +102,13 @@ class Frame:
         gift_list = self.all("商城系统", "首页推荐", "通常礼包")
         if (shop_list or gift_list) and not self.has("是否购买", region=(350, 140, 850, 225)):
             return False
-        return self.has("购买次数", region=region)
+        # A reward banner is translucent: the cards' "N日后重置购买次数" reset
+        # timers show through it. Neither is a purchase prompt.
+        if self.reward() and not self.has("是否购买", region=(350, 140, 850, 225)):
+            return False
+        return any("购买次数" in normalized(w.text) and "重置" not in normalized(w.text)
+                   for w in self.words if w.confidence >= .73
+                   and region[0] <= w.center[0] <= region[2] and region[1] <= w.center[1] <= region[3])
 
     def colored(self, word: Word, color: str = "orange") -> bool:
         x1, y1, x2, y2 = word.box

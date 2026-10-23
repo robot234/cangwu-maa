@@ -129,6 +129,24 @@
       "Node.Action.Failed": "已停止：活动扫荡 · 闪耀之始-7，请查看日志"
     }
   },
+  "CangwuEndurance": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "endurance"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：续航计划（限时）",
+      "Node.Action.Succeeded": "完成：续航计划（限时）",
+      "Node.Action.Failed": "已停止：续航计划（限时），请查看日志"
+    }
+  },
   "CangwuArena": {
     "recognition": "DirectHit",
     "action": {
