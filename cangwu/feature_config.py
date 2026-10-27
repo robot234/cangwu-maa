@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from .runtime import ROOT, CST, Halt, NeedsSetup
+from .resource_catalog import RESOURCE_DUNGEONS
 
 
 CATALOG = json.loads((ROOT / "assets/shop_catalog.json").read_text(encoding="utf-8"))
@@ -16,6 +17,12 @@ SHOPS = {
     "master": {"label": "大师商店", "entry": "CangwuMasterShop", "period": "day"},
 }
 SHOP_TASKS = {f"shop_{key}": key for key in SHOPS}
+STAMINA_TASKS = {"armor", "event", *RESOURCE_DUNGEONS}
+STAMINA_NODE = "CangwuParam_stamina_settings"
+STAMINA_ITEMS = "CangwuParam_stamina_items"
+STAMINA_CRYSTALS = "CangwuParam_stamina_crystals"
+STAMINA_DEFAULT = {"enabled": False, "quantity": 0, "item_limit": 0,
+                   "allow_crystals": False, "crystal_limit": 0, "crystal_budget": 0}
 BOSSES = {
     "niai": {"name": "逆爱", "region": (0, 110, 126, 210)},
     "sobek": {"name": "索贝克", "region": (0, 220, 126, 325)},
@@ -90,6 +97,8 @@ def armor_selection(context) -> dict[str, int]:
 
 def saved_feature_overrides(definition: dict, values: dict) -> dict:
     """Developer API runner must reset cached selections just like native MXU."""
+    if definition["name"] in RESOURCE_DUNGEONS:
+        return saved_resource_overrides(definition, values)
     key = {**SHOP_TASKS, "armor": "armor"}[definition["name"]]
     override = copy.deepcopy(definition["pipeline_override"])
     choices = BOSSES if key == "armor" else {item["id"]: item for item in CATALOG[key]}
@@ -106,6 +115,116 @@ def saved_feature_overrides(definition: dict, values: dict) -> dict:
         if not 1 <= count <= (5 if key == "armor" else 999):
             raise Halt("已保存的商品／共鸣数量超出范围。")
         override[item_node(key, item_id)]["action"]["param"]["custom_action_param"] = {"enabled": True, "quantity": count}
+    return saved_stamina_overrides(override, values) if definition["name"] in STAMINA_TASKS else override
+
+
+def resource_selection(context, key: str) -> tuple[dict, int]:
+    spec = RESOURCE_DUNGEONS[key]
+    settings = read_parameter(context, item_node(key, "settings"))
+    reserve = settings.get("reserve_stamina")
+    if type(reserve) is not int or not 0 <= reserve <= 99999:
+        raise Halt("资源副本保留体力必须为0～99999的整数。")
+    selected = {}
+    for choice in spec["choices"]:
+        value = read_parameter(context, item_node(key, choice))
+        if value["enabled"]:
+            stage = value.get("stage")
+            if type(stage) is not int or not 1 <= stage <= spec["max_stage"]:
+                raise Halt(f"{spec['label']}关卡必须为1～{spec['max_stage']}。")
+            if not 1 <= value["quantity"] <= 100:
+                raise Halt("资源副本每个子关卡的每日目标次数必须为1～100。")
+            selected[choice] = {"stage": stage, "quantity": value["quantity"]}
+    return selected, reserve
+
+
+def saved_resource_overrides(definition: dict, values: dict) -> dict:
+    key = definition["name"]
+    spec = RESOURCE_DUNGEONS[key]
+    override = copy.deepcopy(definition["pipeline_override"])
+
+    def number(option_key, field, default, low, high):
+        saved = values.get(option_key, {"type": "input", "values": {}})
+        if not isinstance(saved, dict) or saved.get("type") != "input" or not isinstance(saved.get("values", {}), dict):
+            raise Halt("已保存的资源副本输入格式无效。")
+        raw = saved.get("values", {}).get(field, str(default))
+        if not isinstance(raw, str) or not raw.isascii() or not raw.isdecimal() or not low <= int(raw) <= high:
+            raise Halt("已保存的资源副本关卡、次数或保留体力超出范围。")
+        return int(raw)
+
+    reserve = number(f"reserve_{key}", "reserve", 0, 0, 99999)
+    override[item_node(key, "settings")]["action"]["param"]["custom_action_param"] = {
+        "enabled": False, "quantity": 0, "reserve_stamina": reserve}
+    for choice in spec["choices"]:
+        switch = values.get(f"choice_{key}_{choice}", {"type": "switch", "value": False})
+        if not isinstance(switch, dict) or switch.get("type") != "switch" or type(switch.get("value")) is not bool:
+            raise Halt("已保存的资源副本开关格式无效。")
+        if switch["value"]:
+            option = f"quantity_{key}_{choice}"
+            override[item_node(key, choice)]["action"]["param"]["custom_action_param"] = {
+                "enabled": True, "quantity": number(option, "amount", 1, 1, 100),
+                "stage": number(option, "stage", spec["max_stage"], 1, spec["max_stage"])}
+    return saved_stamina_overrides(override, values)
+
+
+def validate_stamina_config(value: dict) -> dict:
+    if not isinstance(value, dict) or type(value.get("enabled")) is not bool:
+        raise Halt("自动补体力开关格式无效。")
+    if not value["enabled"]:
+        return copy.deepcopy(STAMINA_DEFAULT)
+    result = copy.deepcopy(STAMINA_DEFAULT)
+    result.update(value)
+    if type(result["allow_crystals"]) is not bool:
+        raise Halt("结晶补体力开关格式无效。")
+    for key, high in (("item_limit", 100), ("crystal_limit", 30), ("crystal_budget", 99999)):
+        if type(result[key]) is not int or not 0 <= result[key] <= high:
+            raise Halt("自动补体力的每日次数或结晶总额超出范围。")
+    if not result["allow_crystals"]:
+        result["crystal_limit"] = result["crystal_budget"] = 0
+    return result
+
+
+def stamina_selection(context) -> dict:
+    # Missing resources never inherit a previously enabled local setting.
+    if context.get_node_data(STAMINA_NODE) is None:
+        return copy.deepcopy(STAMINA_DEFAULT)
+    settings = read_parameter(context, STAMINA_NODE)
+    if not settings["enabled"]:
+        return copy.deepcopy(STAMINA_DEFAULT)
+    items = read_parameter(context, STAMINA_ITEMS)
+    crystals = read_parameter(context, STAMINA_CRYSTALS)
+    return validate_stamina_config({"enabled": True, "item_limit": items["quantity"],
+        "allow_crystals": crystals["enabled"], "crystal_limit": crystals["quantity"],
+        "crystal_budget": crystals.get("total", 0)})
+
+
+def saved_stamina_overrides(override: dict, values: dict) -> dict:
+    def switch(name):
+        value = values.get(name, {"type": "switch", "value": False})
+        if not isinstance(value, dict) or value.get("type") != "switch" or type(value.get("value")) is not bool:
+            raise Halt("已保存的补体力开关格式无效。")
+        return value["value"]
+
+    def number(name, field, high):
+        option = values.get(name, {"type": "input", "values": {}})
+        if not isinstance(option, dict) or option.get("type") != "input" or not isinstance(option.get("values", {}), dict):
+            raise Halt("已保存的补体力额度格式无效。")
+        raw = option.get("values", {}).get(field, "0")
+        if not isinstance(raw, str) or not raw.isascii() or not raw.isdecimal() or not 0 <= int(raw) <= high:
+            raise Halt("已保存的补体力额度超出范围。")
+        return int(raw)
+
+    value = copy.deepcopy(STAMINA_DEFAULT)
+    if switch("auto_stamina"):
+        value.update(enabled=True, item_limit=number("stamina_items", "items", 100))
+        if switch("stamina_crystals"):
+            value.update(allow_crystals=True, crystal_limit=number("stamina_crystal_budget", "times", 30),
+                         crystal_budget=number("stamina_crystal_budget", "total", 99999))
+    value = validate_stamina_config(value)
+    for node, data in ((STAMINA_NODE, {"enabled": value["enabled"], "quantity": 0}),
+                       (STAMINA_ITEMS, {"enabled": False, "quantity": value["item_limit"]}),
+                       (STAMINA_CRYSTALS, {"enabled": value["allow_crystals"], "quantity": value["crystal_limit"], "total": value["crystal_budget"]})):
+        override[node] = {"action": {"type": "Custom", "param": {
+            "custom_action": "CangwuParameter", "custom_action_param": data}}}
     return override
 
 

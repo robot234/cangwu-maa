@@ -65,8 +65,9 @@ def ui_running() -> bool:
 
 
 def ensure_startup_task() -> None:
-    """Add the new unchecked task to existing MXU profiles before opening the UI."""
+    """Add new unchecked entries without changing existing choices or IDs."""
     import uuid
+    from cangwu.resource_catalog import RESOURCE_DUNGEONS
 
     path = ROOT / "app/config/mxu-CangwuMaa.json"
     if not path.is_file():
@@ -81,18 +82,25 @@ def ensure_startup_task() -> None:
         tasks = instance.get("tasks", [])
         if not isinstance(tasks, list) or not all(isinstance(task, dict) for task in tasks):
             raise RuntimeError("助手任务配置格式异常，原配置未改动。")
-        if any(task.get("taskName") == "startup" for task in tasks):
-            continue
-        tasks.insert(0, {"id": str(uuid.uuid4()), "taskName": "startup", "enabled": False,
-                         "enabledByController": {instance.get("controllerName", "MuMu"): False},
-                         "optionValues": {}, "expanded": False})
+        names = {task.get("taskName") for task in tasks}
+        def disabled(name):
+            return {"id": str(uuid.uuid4()), "taskName": name, "enabled": False,
+                    "enabledByController": {instance.get("controllerName", "MuMu"): False},
+                    "optionValues": {}, "expanded": False}
+        if "startup" not in names:
+            tasks.insert(0, disabled("startup"))
+            changed = True
+        for name in RESOURCE_DUNGEONS:
+            if name not in names:
+                position = next((i for i, task in enumerate(tasks) if task.get("taskName") == "event"), len(tasks))
+                tasks.insert(position, disabled(name))
+                changed = True
         instance["tasks"] = tasks
-        changed = True
     if not changed:
         return
     backups = ROOT / "runtime/backups"
     backups.mkdir(parents=True, exist_ok=True)
-    (backups / f"mxu-before-startup-{uuid.uuid4().hex}.json").write_bytes(before)
+    (backups / f"mxu-before-task-migration-{uuid.uuid4().hex}.json").write_bytes(before)
     temporary = path.with_name(path.name + f".{uuid.uuid4().hex}.tmp")
     try:
         temporary.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

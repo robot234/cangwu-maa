@@ -94,6 +94,8 @@ class Frame:
 
     def paid_dialog(self) -> bool:
         region = (200, 140, 1130, 620)
+        if self.has("补充体力", region=(540, 105, 740, 165), exact=True):
+            return True
         if self.has("购买体力", "体力购买", "购买演习", "充值", "支付", "是否消耗", region=region):
             return True
         # Item cards can show clipped reset timers containing "购买次数".

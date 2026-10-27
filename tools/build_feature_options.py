@@ -5,11 +5,93 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from cangwu.feature_config import CATALOG, BOSSES, SHOPS, item_node
+from cangwu.feature_config import CATALOG, BOSSES, SHOPS, STAMINA_TASKS, STAMINA_NODE, STAMINA_ITEMS, STAMINA_CRYSTALS, item_node
+from cangwu.resource_catalog import RESOURCE_DUNGEONS
 
 
 def parameter(value):
     return {"action": {"type": "Custom", "param": {"custom_action": "CangwuParameter", "custom_action_param": value}}}
+
+
+def resource_tasks(interface, pipeline):
+    tasks = []
+    for key, spec in RESOURCE_DUNGEONS.items():
+        options, reset = [], {}
+        settings = item_node(key, "settings")
+        reset[settings] = parameter({"enabled": False, "quantity": 0, "reserve_stamina": 0})
+        pipeline[settings] = {"recognition": "DirectHit", **reset[settings]}
+        reserve_key = f"reserve_{key}"
+        options.append(reserve_key)
+        interface["option"][reserve_key] = {
+            "type": "input", "label": "保留体力",
+            "inputs": [{"name": "reserve", "label": "至少保留体力（补充仍不足时跳过）", "default": "0",
+                        "pipeline_type": "int", "verify": "^[0-9]{1,5}$", "pattern_msg": "请输入0～99999"}],
+            "pipeline_override": {settings: parameter({"enabled": False, "quantity": 0, "reserve_stamina": "{reserve}"})}}
+        for choice, data in spec["choices"].items():
+            node = item_node(key, choice)
+            maximum = spec["max_stage"]
+            empty = {"enabled": False, "quantity": 0, "stage": maximum}
+            reset[node] = parameter(empty)
+            pipeline[node] = {"recognition": "DirectHit", **reset[node]}
+            input_key, switch_key = f"quantity_{key}_{choice}", f"choice_{key}_{choice}"
+            interface["option"][input_key] = {
+                "type": "input", "label": data["label"] + " · 关卡与每日目标",
+                "inputs": [
+                    {"name": "stage", "label": f"关卡编号（1～{maximum}，例如{maximum}表示1-{maximum}）", "default": str(maximum),
+                     "pipeline_type": "int", "verify": "^(?:[1-9]|10)$" if maximum == 10 else "^[1-5]$", "pattern_msg": f"请输入1～{maximum}"},
+                    {"name": "amount", "label": "每日目标次数（重跑只补差额）", "default": "1", "pipeline_type": "int",
+                     "verify": "^(?:[1-9][0-9]?|100)$", "pattern_msg": "请输入1～100"}],
+                "pipeline_override": {node: parameter({"enabled": True, "quantity": "{amount}", "stage": "{stage}"})}}
+            interface["option"][switch_key] = {
+                "type": "switch", "label": data["label"], "default_case": "No", "cases": [
+                    {"name": "No", "label": "关闭", "pipeline_override": {node: parameter(empty)}},
+                    {"name": "Yes", "label": "启用", "option": [input_key],
+                     "pipeline_override": {node: parameter({"enabled": True, "quantity": 1, "stage": maximum})}}]}
+            options.append(switch_key)
+        entry = spec["entry"]
+        pipeline[entry] = {"recognition": "DirectHit", "action": {"type": "Custom", "param": {
+            "custom_action": "CangwuTask", "custom_action_param": {"task": key}}}, "max_hit": 1,
+            "focus": {"Node.Action.Starting": "开始：" + spec["label"], "Node.Action.Succeeded": "完成：" + spec["label"],
+                      "Node.Action.Failed": "已停止：" + spec["label"] + "，请查看日志"}}
+        tasks.append({"name": key, "label": spec["label"] + " · 自选关卡", "entry": entry, "group": ["作战"],
+                      "default_check": False, "option": options, "pipeline_override": reset,
+                      "description": "每个子关卡单独设置关卡编号和每日目标次数，默认关闭。未开放、未三星或体力不足时跳过；周年庆等全开活动以游戏显示为准。可选自动补体力默认关闭，需另设额度。单次体力与扫荡预览逐项核对，不启动手动作战。每日05:00重置助手目标，重跑只补未完成次数；放在活动清体力之前。"})
+    return tasks
+
+
+def stamina_options(interface, pipeline):
+    # Isolated nodes avoid depending on nested JSON merge order in MXU.
+    empty = {STAMINA_NODE: parameter({"enabled": False, "quantity": 0}),
+             STAMINA_ITEMS: parameter({"enabled": False, "quantity": 0}),
+             STAMINA_CRYSTALS: parameter({"enabled": False, "quantity": 0, "total": 0})}
+    for node, value in empty.items():
+        pipeline[node] = {"recognition": "DirectHit", **value}
+    interface["option"]["auto_stamina"] = {
+        "type": "switch", "label": "自动补体力（不足时补充）", "default_case": "No", "cases": [
+            {"name": "No", "label": "关闭", "pipeline_override": empty},
+            {"name": "Yes", "label": "开启", "option": ["stamina_items", "stamina_crystals"],
+             "pipeline_override": {STAMINA_NODE: parameter({"enabled": True, "quantity": 0})}}]}
+    interface["option"]["stamina_items"] = {
+        "type": "input", "label": "体力道具每日上限（所有任务共用，优先50再100体力道具）",
+        "inputs": [{"name": "items", "label": "每日最多使用几个（0表示不用）", "default": "0", "pipeline_type": "int",
+                    "verify": "^(?:[0-9]|[1-9][0-9]|100)$", "pattern_msg": "请输入0～100"}],
+        "pipeline_override": {STAMINA_ITEMS: parameter({"enabled": False, "quantity": "{items}"})}}
+    interface["option"]["stamina_crystals"] = {
+        "type": "switch", "label": "允许结晶购买体力（道具不够时使用）", "default_case": "No", "cases": [
+            {"name": "No", "label": "不允许", "pipeline_override": {STAMINA_CRYSTALS: empty[STAMINA_CRYSTALS]}},
+            {"name": "Yes", "label": "允许", "option": ["stamina_crystal_budget"],
+             "pipeline_override": {STAMINA_CRYSTALS: parameter({"enabled": True, "quantity": 0, "total": 0})}}]}
+    interface["option"]["stamina_crystal_budget"] = {
+        "type": "input", "label": "结晶每日购买额度（所有任务共用，两项均须大于0）", "inputs": [
+            {"name": "times", "label": "每日最多购买次数", "default": "0", "pipeline_type": "int",
+             "verify": "^(?:[0-9]|[12][0-9]|30)$", "pattern_msg": "请输入0～30"},
+            {"name": "total", "label": "每日最多消耗结晶总数", "default": "0", "pipeline_type": "int",
+             "verify": "^[0-9]{1,5}$", "pattern_msg": "请输入0～99999"}],
+        "pipeline_override": {STAMINA_CRYSTALS: parameter({"enabled": True, "quantity": "{times}", "total": "{total}"})}}
+    for task in interface["task"]:
+        if task["name"] in STAMINA_TASKS:
+            task["option"] = [key for key in task.get("option", []) if key != "auto_stamina"] + ["auto_stamina"]
+            task.setdefault("pipeline_override", {}).update(empty)
 
 
 def main():
@@ -17,9 +99,9 @@ def main():
     pipeline_path = ROOT / "app/resource/pipeline/daily.json"
     interface = json.loads(interface_path.read_text(encoding="utf-8"))
     pipeline = json.loads(pipeline_path.read_text(encoding="utf-8"))
-    generated = (*SHOPS, "dispatch", "armor")
+    generated = (*SHOPS, "dispatch", "armor", *RESOURCE_DUNGEONS)
     for key in list(interface["option"]):
-        if any(key.startswith(prefix + name + "_") or key == "choices_" + name
+        if any(key.startswith(prefix + name + "_") or key == "choices_" + name or key == "reserve_" + name
                for name in generated for prefix in ("choice_", "quantity_")):
             del interface["option"][key]
     for key in list(pipeline):
@@ -69,9 +151,11 @@ def main():
             "custom_action": "CangwuTask", "custom_action_param": {"task": task_name}}}, "max_hit": 1,
             "focus": {"Node.Action.Starting": f"开始：{label}", "Node.Action.Succeeded": f"完成：{label}",
                       "Node.Action.Failed": f"已停止：{label}，请查看日志"}}
-    interface["task"] = [t for t in interface["task"] if t["name"] != "armor" and not t["name"].startswith("shop_")]
+    tasks.extend(resource_tasks(interface, pipeline))
+    interface["task"] = [t for t in interface["task"] if t["name"] != "armor" and not t["name"].startswith("shop_") and t["name"] not in RESOURCE_DUNGEONS]
     position = next(i for i, t in enumerate(interface["task"]) if t["name"] == "event")
     interface["task"][position:position] = tasks
+    stamina_options(interface, pipeline)
     if not any(g["name"] == "兑换" for g in interface["group"]):
         interface["group"].insert(1, {"name": "兑换"})
     interface_path.write_text(json.dumps(interface, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

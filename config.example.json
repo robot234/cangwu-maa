@@ -18,6 +18,9 @@
     "shop_union": false,
     "shop_master": false,
     "armor": false,
+    "resource_beast": false,
+    "resource_core": false,
+    "resource_training": false,
     "event": true,
     "endurance": true,
     "arena": true,
@@ -32,6 +35,13 @@
     "expires_at": "2026-10-25T23:00:00+08:00",
     "entry_template": "assets/event_entry.png",
     "reserve_stamina": 0
+  },
+  "stamina_refill": {
+    "enabled": false,
+    "item_limit": 0,
+    "allow_crystals": false,
+    "crystal_limit": 0,
+    "crystal_budget": 0
   },
   "arena": {
     "max_tickets": 15

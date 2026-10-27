@@ -9,7 +9,8 @@ from maa.custom_action import CustomAction
 from .device import DeviceError
 from .runtime import Context, Halt, NeedsSetup, load_config
 from .tasks import TASKS
-from .feature_config import SHOPS, SHOP_TASKS
+from .feature_config import SHOPS, SHOP_TASKS, STAMINA_TASKS, stamina_selection
+from .resource_catalog import RESOURCE_DUNGEONS
 from .vision import Vision
 from .startup import prepare_game
 
@@ -52,6 +53,12 @@ class CangwuTask(CustomAction):
             special = {"startup": "开始游戏", "feature_preview": "功能预览", "inspect": "页面检查", "check": "检查连接"}
             name, task = (special[key], None) if key in special else next((name, fn) for task_key, name, fn in TASKS if task_key == key)
             ctx = Context(task_config(params), threading.Event(), lambda line: print(line, flush=True), maa=context)
+            if key in STAMINA_TASKS or (key == "feature_preview" and params.get("feature") in STAMINA_TASKS):
+                ctx.config["stamina_refill"] = stamina_selection(context)
+                refill = ctx.config["stamina_refill"]
+                if refill["enabled"]:
+                    ctx.log(f"自动补体力：全日累计上限为道具{refill['item_limit']}个，结晶购买{refill['crystal_limit']}次／{refill['crystal_budget']}结晶。"
+                            + ("本次为预览，不会补充或消耗。" if key == "feature_preview" else ""))
             ctx.deadline = self.started + int(ctx.config["limits"]["run_minutes"]) * 60
             ctx.config["limits"]["max_actions"] = max(0, int(ctx.config["limits"]["max_actions"]) - self.actions)
             ctx.vision = Vision(context)
@@ -77,6 +84,9 @@ class CangwuTask(CustomAction):
                 elif feature == "armor":
                     from .armor import armor
                     armor(ctx, preview_only=True)
+                elif feature in RESOURCE_DUNGEONS:
+                    from .resource_stages import resource_sweep
+                    resource_sweep(ctx, feature, preview_only=True)
                 else:
                     raise Halt("未知的新功能预览项目。")
                 if ctx.actions:
@@ -86,7 +96,7 @@ class CangwuTask(CustomAction):
                 ctx.result(name, "completed", f"Maa 截图和 OCR 正常，识别到 {len(frame.words)} 段文字；" + ("当前为大厅。" if frame.is_home() else "当前页面请查看截图。"), frame)
             else:
                 # These tasks reconcile their own pages before navigating away.
-                if key not in ("expedition", "armor", "arena", *SHOP_TASKS):
+                if key not in ("expedition", "armor", "arena", *SHOP_TASKS, *RESOURCE_DUNGEONS):
                     ctx.home()
                 task(ctx)
                 if ctx.actions:

@@ -13,6 +13,10 @@ class DeviceError(RuntimeError):
     pass
 
 
+class DeviceJobFailed(DeviceError):
+    """A controller job finished unsuccessfully; it is no longer pending."""
+
+
 def discover_adb() -> Path:
     for name in ("nx_device/12.0/shell/adb.exe", "nx_main/adb.exe"):
         path = Path(os.environ.get("ProgramFiles", "C:/Program Files")) / "Netease/MuMuPlayer-12.0" / name
@@ -41,15 +45,19 @@ class Device:
             raise DeviceError("模拟器地址须为 127.0.0.1:端口。")
 
     @staticmethod
-    def completed(job, description: str):
+    def completed(job, description: str, *, check=None):
         import time
         deadline = time.monotonic() + 25
         while not job.done:
+            if check is not None:
+                check()
             if time.monotonic() >= deadline:
                 raise DeviceError(f"Maa {description} 超时，已停止后续输入。")
             time.sleep(.05)
+        if check is not None:
+            check()
         if not job.succeeded:
-            raise DeviceError(f"Maa {description} 失败。")
+            raise DeviceJobFailed(f"Maa {description} 失败。")
         return job
 
     def connect(self) -> None:
@@ -60,15 +68,28 @@ class Device:
             raise DeviceError("当前模拟器没有安装苍雾世界国服。")
         self.log("已接入 MaaFramework 控制器；截图、识别和点击由 Maa 执行。")
 
-    def shell(self, *args: str, timeout: float = 8) -> str:
+    def shell(self, *args: str, timeout: float = 8, description: str = "设备检查") -> str:
         import shlex
+        self.check()
         if self.controller is None:
             raise DeviceError("Maa 控制器未初始化。")
-        job = self.completed(self.controller.post_shell(shlex.join(args), timeout=int(timeout * 1000)), "设备检查")
+        job = self.completed(self.controller.post_shell(shlex.join(args), timeout=int(timeout * 1000)),
+                             description, check=self.check)
         return str(job.get()).replace("\r", "")
 
     def foreground(self) -> str:
-        output = self.shell("dumpsys", "activity", "activities")
+        # Retry only this read-only query, and only once the failed job is done.
+        # Pending/time-out jobs and input actions must never be resubmitted.
+        for attempt in range(2):
+            self.check()
+            try:
+                output = self.shell("dumpsys", "activity", "activities", description="前台应用检查")
+                break
+            except DeviceJobFailed:
+                if attempt:
+                    raise
+                self.check()
+                self.log("前台应用检查暂时失败，正在重新确认连接。")
         for prefix in ("topResumedActivity=", "ResumedActivity:", "mResumedActivity:"):
             for line in output.splitlines():
                 if prefix in line:

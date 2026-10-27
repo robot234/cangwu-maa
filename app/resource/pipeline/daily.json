@@ -327,6 +327,60 @@
       "Node.Action.Failed": "已停止：大师商店 · 自选兑换，请查看日志"
     }
   },
+  "CangwuResourceBeast": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "resource_beast"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：异兽清剿",
+      "Node.Action.Succeeded": "完成：异兽清剿",
+      "Node.Action.Failed": "已停止：异兽清剿，请查看日志"
+    }
+  },
+  "CangwuResourceCore": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "resource_core"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：核心制造",
+      "Node.Action.Succeeded": "完成：核心制造",
+      "Node.Action.Failed": "已停止：核心制造，请查看日志"
+    }
+  },
+  "CangwuResourceTraining": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "resource_training"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：队员特训",
+      "Node.Action.Succeeded": "完成：队员特训",
+      "Node.Action.Failed": "已停止：队员特训，请查看日志"
+    }
+  },
   "CangwuParam_elite_echo_gold": {
     "recognition": "DirectHit",
     "action": {
@@ -1038,6 +1092,270 @@
         "custom_action_param": {
           "enabled": false,
           "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_beast_settings": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "reserve_stamina": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_beast_experience": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "stage": 10
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_beast_shield": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "stage": 10
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_beast_star": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "stage": 10
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_core_settings": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "reserve_stamina": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_core_life": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "stage": 5
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_core_attack": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "stage": 5
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_core_armor": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "stage": 5
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_core_critical": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "stage": 5
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_core_burst": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "stage": 5
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_core_mobility": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "stage": 5
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_training_settings": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "reserve_stamina": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_training_defense": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "stage": 10
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_training_attack": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "stage": 10
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_training_firepower": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "stage": 10
+        }
+      }
+    }
+  },
+  "CangwuParam_resource_training_support": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "stage": 10
+        }
+      }
+    }
+  },
+  "CangwuParam_stamina_settings": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_stamina_items": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0
+        }
+      }
+    }
+  },
+  "CangwuParam_stamina_crystals": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuParameter",
+        "custom_action_param": {
+          "enabled": false,
+          "quantity": 0,
+          "total": 0
         }
       }
     }

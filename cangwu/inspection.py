@@ -3,21 +3,36 @@ from .runtime import Context, Halt
 from .feature_config import SHOPS
 
 
-NAVIGATION = {"商城", "商城系统", "首页推荐", "通常礼包", "每日礼包", "每周礼包", "每月礼包", "兑换商店", "兌換商店", "精英商店", "后勤商店", "联合商店", "大师商店", "作战", "资源", "装甲进阶", "超限共鸣"}
+NAVIGATION = {"商城", "商城系统", "首页推荐", "通常礼包", "每日礼包", "每周礼包", "每月礼包", "兑换商店", "兌換商店", "精英商店", "后勤商店", "联合商店", "大师商店", "作战", "资源", "装甲进阶", "超限共鸣", "异兽清剿", "異兽清剿", "异兽清缴", "核心制造", "队员特训"}
 
 
 def inspect_ui(ctx: Context, params: dict) -> None:
+    if params.get("stamina_probe"):
+        from .stamina import inspect_refill
+        inspect_refill(ctx, params)
+        return
+    if params.get("resource_probe"):
+        inspect_resources(ctx, params)
+        return
     text = params.get("text", "")
     if text and text not in NAVIGATION:
         raise Halt("页面检查仅允许已列出的导航入口，禁止提交购买或作战。")
     if params.get("back"):
         ctx.back()
+    if params.get("dismiss_network_error"):
+        frame = ctx.wait(lambda f: True, "网络异常提示")
+        if not frame.has("网络连接异常(13226)", region=(430, 240, 1080, 390), exact=True):
+            raise Halt("不是已核对的13226网络提示，未点击确认。")
+        ctx.text(frame, "确认", region=(575, 415, 810, 490), exact=True, reason="关闭已识别的网络连接异常提示")
     frame = ctx.home() if params.get("home", False) else ctx.wait(lambda f: True, "页面加载完成")
     route = params.get("route")
     if route:
         if route in SHOPS:
             from .shops import open_shop
             frame = open_shop(ctx, route)
+        elif route == "resources":
+            from .resource_navigation import open_resources
+            frame = open_resources(ctx)
         elif route in ("combat", "recommend"):
             frame = ctx.home()
             if route == "combat":
@@ -102,4 +117,58 @@ def inspect_ui(ctx: Context, params: dict) -> None:
             raise Halt("只有确认的装甲进阶页面才能查看规则。")
         ctx.tap(frame, (435, 43), "查看装甲进阶说明")
         frame = ctx.wait(lambda f: not f.has("扫荡", region=(790, 610, 980, 710), exact=True), "规则说明")
+    resource_detail = (frame.has("核心", "觉醒", "异兽清剿", "異兽清剿", region=(240, 0, 415, 85))
+                       and frame.has("作战准备", region=(980, 610, 1260, 710)))
+    menu = params.get("resource_menu_down", 0)
+    if type(menu) is not int or not 0 <= menu <= 2:
+        raise Halt("资源菜单最多向下检查2次。")
+    if (menu or params.get("resource_rules")) and not resource_detail:
+        raise Halt("只有已识别的资源关卡详情才能检查菜单或说明。")
+    for _ in range(menu):
+        ctx.swipe(frame, (65, 620), (65, 240), "查看下方资源子关卡", duration=900)
+        frame = ctx.wait(lambda f: f.has("作战准备", region=(980, 610, 1260, 710)), "资源菜单")
+    if params.get("resource_rules"):
+        ctx.tap(frame, (435, 43), "查看资源关卡规则")
+        frame = ctx.wait(lambda f: not f.has("作战准备", region=(980, 610, 1260, 710)), "资源关卡说明")
+    if frame.has("网络连接异常", "网络异常", "连接失败", "重新连接", region=(250, 180, 1080, 540)):
+        ctx.save("inspection_network_error", frame)
+        raise Halt("游戏显示网络连接异常，本次页面检查没有成功；不能视作副本未开放。")
     ctx.result("页面检查", "completed", "只进行已确认的页面导航和截图，没有提交付费购买或作战。", frame)
+
+
+def inspect_resources(ctx: Context, params: dict) -> None:
+    from .resource_catalog import RESOURCE_DUNGEONS
+    from .resource_stages import (detail_matches, open_dungeon, prepare_sweep, select_choice,
+                                 select_stage, sweep_unlocked)
+    from .shops import field_integer
+    key = params["resource_probe"]
+    if key not in RESOURCE_DUNGEONS:
+        raise Halt("不是允许检查的资源副本。")
+    spec = RESOURCE_DUNGEONS[key]
+    choices = params.get("resource_choices", list(spec["choices"]))
+    stage = params.get("resource_stage", spec["max_stage"])
+    if (not isinstance(choices, list) or not choices or len(set(choices)) != len(choices)
+            or any(choice not in spec["choices"] for choice in choices)
+            or type(stage) is not int or not 1 <= stage <= spec["max_stage"]):
+        raise Halt("资源检查的子关卡或关卡编号无效。")
+    frame = open_dungeon(ctx, key)
+    messages = []
+    for choice in choices:
+        frame, closed = select_choice(ctx, frame, key, choice)
+        ctx.save(f"probe_{key}_{choice}_selected", frame)
+        if closed:
+            messages.append(choice + "：未开放，已跳过；" + closed)
+            continue
+        frame = select_stage(ctx, frame, key, choice, stage)
+        ctx.save(f"probe_{key}_{choice}_{stage}", frame)
+        cost = field_integer(frame, (1160, 630, 1235, 690))
+        messages.append(f"{choice} 1-{stage}：单次{cost}体力；三星={sweep_unlocked(frame)}")
+        if params.get("resource_preview") and sweep_unlocked(frame):
+            stamina = frame.number_fraction((1080, 0, 1279, 85))
+            if type(cost) is not int or not 1 <= cost <= 100 or stamina is None or stamina[0] < cost:
+                raise Halt("资源检查时单次消耗或现有体力不足，未打开扫荡。")
+            frame = prepare_sweep(ctx, frame, 1, cost, 0)
+            ctx.save(f"probe_{key}_{choice}_{stage}_preview", frame)
+            ctx.tap(frame, (280, 620), "取消检查用扫荡预览")
+            frame = ctx.wait(lambda f: detail_matches(f, key, choice, stage), "资源扫荡预览关闭")
+    ctx.result("资源页面检查", "completed", "；".join(messages) + "；没有提交作战或扫荡。", frame)

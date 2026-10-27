@@ -238,9 +238,18 @@ def event(ctx: Context) -> None:
     stamina = frame.number_fraction((1080, 0, 1279, 85))
     if stamina is None:
         raise Halt("无法读清现有体力，拒绝扫荡。")
+    from .stamina import ensure_stamina
+    # This task clears existing stamina. Refill only for one sweep, once per
+    # entry; never turn it into a refill/clear loop.
+    frame = ensure_stamina(ctx, frame, reserve + cost,
+        lambda f: f.has(config["stage"], region=(790, 70, 1279, 180))
+                  and f.has("作战准备") and f.has("扫荡", region=(790, 600, 970, 710), exact=True))
+    stamina = frame.number_fraction((1080, 0, 1279, 85))
+    if stamina is None:
+        raise Halt("补体力后无法读清体力，未开始活动扫荡。")
     count = min(100, max(0, (stamina[0] - reserve) // cost))
     if count == 0:
-        ctx.result("活动扫荡", "already_done", f"体力 {stamina[0]}，不足一次 {cost}；没有购买体力。", frame)
+        ctx.result("活动扫荡", "already_done", f"体力 {stamina[0]}，不足一次 {cost}或需保留{reserve}，跳过。", frame)
         return
     use_max = reserve == 0 and count < 100
     # Open the sweep dialog only if the whole spend can also be settled and verified.
@@ -336,6 +345,12 @@ def arena_page(frame: Frame) -> bool:
             and frame.has("名人堂", region=(0, 650, 130, 719), exact=True)
             and frame.has("防御记录", region=(1000, 70, 1250, 140), exact=True)
             and frame.has("作战准备", region=(1000, 610, 1279, 710), exact=True))
+
+
+def arena_proxy_started(frame: Frame) -> bool:
+    return (not frame.is_loading() and arena_page(frame)
+            and not frame.has("开始代理", region=(490, 500, 790, 580))
+            and frame.has("中止代理", "代理完成", region=(790, 610, 1279, 710)))
 
 
 def arena_settle(ctx: Context, frame: Frame) -> Frame:
@@ -445,7 +460,7 @@ def arena(ctx: Context) -> None:
         raise Halt("竞技场预览次数与计划不符，拒绝开始。")
     ctx.save("arena_budget", frame)
     ctx.text(frame, "开始代理", region=(490, 500, 790, 580), reason=f"启动 {actual} 次竞技场代理，只使用现有票")
-    frame = ctx.wait(lambda f: f.has("作战演习") and not f.has("开始代理", region=(490, 500, 790, 580)), "竞技场代理已启动")
+    frame = ctx.wait(arena_proxy_started, "竞技场代理启动确认", timeout=12)
     ctx.save("arena_started", frame)
     ctx.log(f"竞技场代理已开始，预计约 {actual * 15} 秒；等待游戏结算。")
     frame = ctx.wait(lambda f: f.has("代理完成", region=(790, 610, 1279, 710)), "竞技场代理完成", timeout=min(600, actual * 15 + 100))
@@ -507,6 +522,15 @@ def friends(ctx: Context) -> None:
     ctx.text(frame, "好友", region=(1140, 340, 1279, 450), exact=True)
     frame = ctx.wait(lambda f: f.has("好友系统", region=(180, 0, 450, 100)), "好友页面")
     before = friend_stamina(frame)
+    # Heads-up notifications can cover the counter while the page title is clear.
+    # Wait for a readable counter before making any input on the friend page.
+    if before is None and not frame.has("暂无好友", "没有好友"):
+        ctx.log("好友体力数字暂时看不清，等待遮挡消失后重新识别。")
+        until = min(ctx.deadline, time.monotonic() + 8)
+        while before is None and time.monotonic() < until:
+            ctx.pause(.6)
+            frame = ctx.frame()
+            before = friend_stamina(frame)
     if before and before[0] >= before[1]:
         ctx.result("好友点赞", "already_done", f"今日好友体力已领取 {before[0]}/{before[1]}。", frame)
         return
@@ -692,4 +716,19 @@ def armor(ctx: Context) -> None:
     run(ctx)
 
 
-TASKS = [("base", "指挥室收菜", base), ("expedition", "远征", expedition), ("mail", "邮件", mail), ("friends", "好友", friends), ("free_gifts", "首页推荐免费礼包", free_gifts), ("shop_elite", "精英商店", elite_shop), ("shop_logistics", "后勤商店", logistics_shop), ("shop_union", "联合商店", union_shop), ("shop_master", "大师商店", master_shop), ("armor", "装甲进阶", armor), ("event", "活动扫荡", event), ("endurance", "续航计划", endurance), ("arena", "竞技场", arena), ("missions", "任务领奖", missions), ("pass", "通行证", battle_pass)]
+def resource_beast(ctx: Context) -> None:
+    from .resource_stages import resource_sweep
+    resource_sweep(ctx, "resource_beast")
+
+
+def resource_core(ctx: Context) -> None:
+    from .resource_stages import resource_sweep
+    resource_sweep(ctx, "resource_core")
+
+
+def resource_training(ctx: Context) -> None:
+    from .resource_stages import resource_sweep
+    resource_sweep(ctx, "resource_training")
+
+
+TASKS = [("base", "指挥室收菜", base), ("expedition", "远征", expedition), ("mail", "邮件", mail), ("friends", "好友", friends), ("free_gifts", "首页推荐免费礼包", free_gifts), ("shop_elite", "精英商店", elite_shop), ("shop_logistics", "后勤商店", logistics_shop), ("shop_union", "联合商店", union_shop), ("shop_master", "大师商店", master_shop), ("armor", "装甲进阶", armor), ("resource_beast", "异兽清剿", resource_beast), ("resource_core", "核心制造", resource_core), ("resource_training", "队员特训", resource_training), ("event", "活动扫荡", event), ("endurance", "续航计划", endurance), ("arena", "竞技场", arena), ("missions", "任务领奖", missions), ("pass", "通行证", battle_pass)]

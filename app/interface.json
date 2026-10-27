@@ -2,7 +2,7 @@
   "interface_version": 2,
   "name": "CangwuMaa",
   "label": "苍雾世界 · 日常助手",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "description.md",
   "welcome": "welcome.md",
   "icon": "icon.png",
@@ -858,7 +858,8 @@
       "option": [
         "choice_armor_niai",
         "choice_armor_sobek",
-        "choice_armor_leviathan"
+        "choice_armor_leviathan",
+        "auto_stamina"
       ],
       "pipeline_override": {
         "CangwuParam_armor_niai": {
@@ -896,8 +897,425 @@
               }
             }
           }
+        },
+        "CangwuParam_stamina_settings": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_stamina_items": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_stamina_crystals": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "total": 0
+              }
+            }
+          }
         }
       }
+    },
+    {
+      "name": "resource_beast",
+      "label": "异兽清剿 · 自选关卡",
+      "entry": "CangwuResourceBeast",
+      "group": [
+        "作战"
+      ],
+      "default_check": false,
+      "option": [
+        "reserve_resource_beast",
+        "choice_resource_beast_experience",
+        "choice_resource_beast_shield",
+        "choice_resource_beast_star",
+        "auto_stamina"
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_beast_settings": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "reserve_stamina": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_resource_beast_experience": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "stage": 10
+              }
+            }
+          }
+        },
+        "CangwuParam_resource_beast_shield": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "stage": 10
+              }
+            }
+          }
+        },
+        "CangwuParam_resource_beast_star": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "stage": 10
+              }
+            }
+          }
+        },
+        "CangwuParam_stamina_settings": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_stamina_items": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_stamina_crystals": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "total": 0
+              }
+            }
+          }
+        }
+      },
+      "description": "每个子关卡单独设置关卡编号和每日目标次数，默认关闭。未开放、未三星或体力不足时跳过；周年庆等全开活动以游戏显示为准。可选自动补体力默认关闭，需另设额度。单次体力与扫荡预览逐项核对，不启动手动作战。每日05:00重置助手目标，重跑只补未完成次数；放在活动清体力之前。"
+    },
+    {
+      "name": "resource_core",
+      "label": "核心制造 · 自选关卡",
+      "entry": "CangwuResourceCore",
+      "group": [
+        "作战"
+      ],
+      "default_check": false,
+      "option": [
+        "reserve_resource_core",
+        "choice_resource_core_life",
+        "choice_resource_core_attack",
+        "choice_resource_core_armor",
+        "choice_resource_core_critical",
+        "choice_resource_core_burst",
+        "choice_resource_core_mobility",
+        "auto_stamina"
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_core_settings": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "reserve_stamina": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_resource_core_life": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "stage": 5
+              }
+            }
+          }
+        },
+        "CangwuParam_resource_core_attack": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "stage": 5
+              }
+            }
+          }
+        },
+        "CangwuParam_resource_core_armor": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "stage": 5
+              }
+            }
+          }
+        },
+        "CangwuParam_resource_core_critical": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "stage": 5
+              }
+            }
+          }
+        },
+        "CangwuParam_resource_core_burst": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "stage": 5
+              }
+            }
+          }
+        },
+        "CangwuParam_resource_core_mobility": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "stage": 5
+              }
+            }
+          }
+        },
+        "CangwuParam_stamina_settings": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_stamina_items": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_stamina_crystals": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "total": 0
+              }
+            }
+          }
+        }
+      },
+      "description": "每个子关卡单独设置关卡编号和每日目标次数，默认关闭。未开放、未三星或体力不足时跳过；周年庆等全开活动以游戏显示为准。可选自动补体力默认关闭，需另设额度。单次体力与扫荡预览逐项核对，不启动手动作战。每日05:00重置助手目标，重跑只补未完成次数；放在活动清体力之前。"
+    },
+    {
+      "name": "resource_training",
+      "label": "队员特训 · 自选关卡",
+      "entry": "CangwuResourceTraining",
+      "group": [
+        "作战"
+      ],
+      "default_check": false,
+      "option": [
+        "reserve_resource_training",
+        "choice_resource_training_defense",
+        "choice_resource_training_attack",
+        "choice_resource_training_firepower",
+        "choice_resource_training_support",
+        "auto_stamina"
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_training_settings": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "reserve_stamina": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_resource_training_defense": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "stage": 10
+              }
+            }
+          }
+        },
+        "CangwuParam_resource_training_attack": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "stage": 10
+              }
+            }
+          }
+        },
+        "CangwuParam_resource_training_firepower": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "stage": 10
+              }
+            }
+          }
+        },
+        "CangwuParam_resource_training_support": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "stage": 10
+              }
+            }
+          }
+        },
+        "CangwuParam_stamina_settings": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_stamina_items": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_stamina_crystals": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "total": 0
+              }
+            }
+          }
+        }
+      },
+      "description": "每个子关卡单独设置关卡编号和每日目标次数，默认关闭。未开放、未三星或体力不足时跳过；周年庆等全开活动以游戏显示为准。可选自动补体力默认关闭，需另设额度。单次体力与扫荡预览逐项核对，不启动手动作战。每日05:00重置助手目标，重跑只补未完成次数；放在活动清体力之前。"
     },
     {
       "name": "event",
@@ -908,9 +1326,49 @@
       ],
       "default_check": true,
       "option": [
-        "reserve_stamina"
+        "reserve_stamina",
+        "auto_stamina"
       ],
-      "description": "扫荡「闪耀之始-7」，每次 42 体力。可设置保留体力，只消耗现有体力；不足一次就跳过。"
+      "description": "扫荡「闪耀之始-7」，每次 42 体力。可设置保留体力，只消耗现有体力；不足一次就跳过。",
+      "pipeline_override": {
+        "CangwuParam_stamina_settings": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_stamina_items": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0
+              }
+            }
+          }
+        },
+        "CangwuParam_stamina_crystals": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "total": 0
+              }
+            }
+          }
+        }
+      }
     },
     {
       "name": "endurance",
@@ -5153,6 +5611,1383 @@
           }
         }
       ]
+    },
+    "reserve_resource_beast": {
+      "type": "input",
+      "label": "保留体力",
+      "inputs": [
+        {
+          "name": "reserve",
+          "label": "至少保留体力（补充仍不足时跳过）",
+          "default": "0",
+          "pipeline_type": "int",
+          "verify": "^[0-9]{1,5}$",
+          "pattern_msg": "请输入0～99999"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_beast_settings": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "reserve_stamina": "{reserve}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "quantity_resource_beast_experience": {
+      "type": "input",
+      "label": "经验获取 · 关卡与每日目标",
+      "inputs": [
+        {
+          "name": "stage",
+          "label": "关卡编号（1～10，例如10表示1-10）",
+          "default": "10",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9]|10)$",
+          "pattern_msg": "请输入1～10"
+        },
+        {
+          "name": "amount",
+          "label": "每日目标次数（重跑只补差额）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9][0-9]?|100)$",
+          "pattern_msg": "请输入1～100"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_beast_experience": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}",
+                "stage": "{stage}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_resource_beast_experience": {
+      "type": "switch",
+      "label": "经验获取",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_resource_beast_experience": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0,
+                    "stage": 10
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_resource_beast_experience"
+          ],
+          "pipeline_override": {
+            "CangwuParam_resource_beast_experience": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1,
+                    "stage": 10
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_resource_beast_shield": {
+      "type": "input",
+      "label": "盾币获取 · 关卡与每日目标",
+      "inputs": [
+        {
+          "name": "stage",
+          "label": "关卡编号（1～10，例如10表示1-10）",
+          "default": "10",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9]|10)$",
+          "pattern_msg": "请输入1～10"
+        },
+        {
+          "name": "amount",
+          "label": "每日目标次数（重跑只补差额）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9][0-9]?|100)$",
+          "pattern_msg": "请输入1～100"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_beast_shield": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}",
+                "stage": "{stage}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_resource_beast_shield": {
+      "type": "switch",
+      "label": "盾币获取",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_resource_beast_shield": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0,
+                    "stage": 10
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_resource_beast_shield"
+          ],
+          "pipeline_override": {
+            "CangwuParam_resource_beast_shield": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1,
+                    "stage": 10
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_resource_beast_star": {
+      "type": "input",
+      "label": "幻化星碎 · 关卡与每日目标",
+      "inputs": [
+        {
+          "name": "stage",
+          "label": "关卡编号（1～10，例如10表示1-10）",
+          "default": "10",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9]|10)$",
+          "pattern_msg": "请输入1～10"
+        },
+        {
+          "name": "amount",
+          "label": "每日目标次数（重跑只补差额）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9][0-9]?|100)$",
+          "pattern_msg": "请输入1～100"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_beast_star": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}",
+                "stage": "{stage}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_resource_beast_star": {
+      "type": "switch",
+      "label": "幻化星碎",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_resource_beast_star": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0,
+                    "stage": 10
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_resource_beast_star"
+          ],
+          "pipeline_override": {
+            "CangwuParam_resource_beast_star": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1,
+                    "stage": 10
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "reserve_resource_core": {
+      "type": "input",
+      "label": "保留体力",
+      "inputs": [
+        {
+          "name": "reserve",
+          "label": "至少保留体力（补充仍不足时跳过）",
+          "default": "0",
+          "pipeline_type": "int",
+          "verify": "^[0-9]{1,5}$",
+          "pattern_msg": "请输入0～99999"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_core_settings": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "reserve_stamina": "{reserve}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "quantity_resource_core_life": {
+      "type": "input",
+      "label": "生命核心 · 关卡与每日目标",
+      "inputs": [
+        {
+          "name": "stage",
+          "label": "关卡编号（1～5，例如5表示1-5）",
+          "default": "5",
+          "pipeline_type": "int",
+          "verify": "^[1-5]$",
+          "pattern_msg": "请输入1～5"
+        },
+        {
+          "name": "amount",
+          "label": "每日目标次数（重跑只补差额）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9][0-9]?|100)$",
+          "pattern_msg": "请输入1～100"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_core_life": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}",
+                "stage": "{stage}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_resource_core_life": {
+      "type": "switch",
+      "label": "生命核心",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_resource_core_life": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0,
+                    "stage": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_resource_core_life"
+          ],
+          "pipeline_override": {
+            "CangwuParam_resource_core_life": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1,
+                    "stage": 5
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_resource_core_attack": {
+      "type": "input",
+      "label": "攻击核心 · 关卡与每日目标",
+      "inputs": [
+        {
+          "name": "stage",
+          "label": "关卡编号（1～5，例如5表示1-5）",
+          "default": "5",
+          "pipeline_type": "int",
+          "verify": "^[1-5]$",
+          "pattern_msg": "请输入1～5"
+        },
+        {
+          "name": "amount",
+          "label": "每日目标次数（重跑只补差额）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9][0-9]?|100)$",
+          "pattern_msg": "请输入1～100"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_core_attack": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}",
+                "stage": "{stage}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_resource_core_attack": {
+      "type": "switch",
+      "label": "攻击核心",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_resource_core_attack": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0,
+                    "stage": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_resource_core_attack"
+          ],
+          "pipeline_override": {
+            "CangwuParam_resource_core_attack": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1,
+                    "stage": 5
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_resource_core_armor": {
+      "type": "input",
+      "label": "装甲核心 · 关卡与每日目标",
+      "inputs": [
+        {
+          "name": "stage",
+          "label": "关卡编号（1～5，例如5表示1-5）",
+          "default": "5",
+          "pipeline_type": "int",
+          "verify": "^[1-5]$",
+          "pattern_msg": "请输入1～5"
+        },
+        {
+          "name": "amount",
+          "label": "每日目标次数（重跑只补差额）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9][0-9]?|100)$",
+          "pattern_msg": "请输入1～100"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_core_armor": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}",
+                "stage": "{stage}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_resource_core_armor": {
+      "type": "switch",
+      "label": "装甲核心",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_resource_core_armor": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0,
+                    "stage": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_resource_core_armor"
+          ],
+          "pipeline_override": {
+            "CangwuParam_resource_core_armor": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1,
+                    "stage": 5
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_resource_core_critical": {
+      "type": "input",
+      "label": "暴击核心 · 关卡与每日目标",
+      "inputs": [
+        {
+          "name": "stage",
+          "label": "关卡编号（1～5，例如5表示1-5）",
+          "default": "5",
+          "pipeline_type": "int",
+          "verify": "^[1-5]$",
+          "pattern_msg": "请输入1～5"
+        },
+        {
+          "name": "amount",
+          "label": "每日目标次数（重跑只补差额）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9][0-9]?|100)$",
+          "pattern_msg": "请输入1～100"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_core_critical": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}",
+                "stage": "{stage}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_resource_core_critical": {
+      "type": "switch",
+      "label": "暴击核心",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_resource_core_critical": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0,
+                    "stage": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_resource_core_critical"
+          ],
+          "pipeline_override": {
+            "CangwuParam_resource_core_critical": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1,
+                    "stage": 5
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_resource_core_burst": {
+      "type": "input",
+      "label": "爆发核心 · 关卡与每日目标",
+      "inputs": [
+        {
+          "name": "stage",
+          "label": "关卡编号（1～5，例如5表示1-5）",
+          "default": "5",
+          "pipeline_type": "int",
+          "verify": "^[1-5]$",
+          "pattern_msg": "请输入1～5"
+        },
+        {
+          "name": "amount",
+          "label": "每日目标次数（重跑只补差额）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9][0-9]?|100)$",
+          "pattern_msg": "请输入1～100"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_core_burst": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}",
+                "stage": "{stage}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_resource_core_burst": {
+      "type": "switch",
+      "label": "爆发核心",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_resource_core_burst": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0,
+                    "stage": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_resource_core_burst"
+          ],
+          "pipeline_override": {
+            "CangwuParam_resource_core_burst": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1,
+                    "stage": 5
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_resource_core_mobility": {
+      "type": "input",
+      "label": "机动核心 · 关卡与每日目标",
+      "inputs": [
+        {
+          "name": "stage",
+          "label": "关卡编号（1～5，例如5表示1-5）",
+          "default": "5",
+          "pipeline_type": "int",
+          "verify": "^[1-5]$",
+          "pattern_msg": "请输入1～5"
+        },
+        {
+          "name": "amount",
+          "label": "每日目标次数（重跑只补差额）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9][0-9]?|100)$",
+          "pattern_msg": "请输入1～100"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_core_mobility": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}",
+                "stage": "{stage}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_resource_core_mobility": {
+      "type": "switch",
+      "label": "机动核心",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_resource_core_mobility": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0,
+                    "stage": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_resource_core_mobility"
+          ],
+          "pipeline_override": {
+            "CangwuParam_resource_core_mobility": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1,
+                    "stage": 5
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "reserve_resource_training": {
+      "type": "input",
+      "label": "保留体力",
+      "inputs": [
+        {
+          "name": "reserve",
+          "label": "至少保留体力（补充仍不足时跳过）",
+          "default": "0",
+          "pipeline_type": "int",
+          "verify": "^[0-9]{1,5}$",
+          "pattern_msg": "请输入0～99999"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_training_settings": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": 0,
+                "reserve_stamina": "{reserve}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "quantity_resource_training_defense": {
+      "type": "input",
+      "label": "防卫觉醒 · 关卡与每日目标",
+      "inputs": [
+        {
+          "name": "stage",
+          "label": "关卡编号（1～10，例如10表示1-10）",
+          "default": "10",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9]|10)$",
+          "pattern_msg": "请输入1～10"
+        },
+        {
+          "name": "amount",
+          "label": "每日目标次数（重跑只补差额）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9][0-9]?|100)$",
+          "pattern_msg": "请输入1～100"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_training_defense": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}",
+                "stage": "{stage}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_resource_training_defense": {
+      "type": "switch",
+      "label": "防卫觉醒",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_resource_training_defense": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0,
+                    "stage": 10
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_resource_training_defense"
+          ],
+          "pipeline_override": {
+            "CangwuParam_resource_training_defense": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1,
+                    "stage": 10
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_resource_training_attack": {
+      "type": "input",
+      "label": "攻击觉醒 · 关卡与每日目标",
+      "inputs": [
+        {
+          "name": "stage",
+          "label": "关卡编号（1～10，例如10表示1-10）",
+          "default": "10",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9]|10)$",
+          "pattern_msg": "请输入1～10"
+        },
+        {
+          "name": "amount",
+          "label": "每日目标次数（重跑只补差额）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9][0-9]?|100)$",
+          "pattern_msg": "请输入1～100"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_training_attack": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}",
+                "stage": "{stage}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_resource_training_attack": {
+      "type": "switch",
+      "label": "攻击觉醒",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_resource_training_attack": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0,
+                    "stage": 10
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_resource_training_attack"
+          ],
+          "pipeline_override": {
+            "CangwuParam_resource_training_attack": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1,
+                    "stage": 10
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_resource_training_firepower": {
+      "type": "input",
+      "label": "火力觉醒 · 关卡与每日目标",
+      "inputs": [
+        {
+          "name": "stage",
+          "label": "关卡编号（1～10，例如10表示1-10）",
+          "default": "10",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9]|10)$",
+          "pattern_msg": "请输入1～10"
+        },
+        {
+          "name": "amount",
+          "label": "每日目标次数（重跑只补差额）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9][0-9]?|100)$",
+          "pattern_msg": "请输入1～100"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_training_firepower": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}",
+                "stage": "{stage}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_resource_training_firepower": {
+      "type": "switch",
+      "label": "火力觉醒",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_resource_training_firepower": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0,
+                    "stage": 10
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_resource_training_firepower"
+          ],
+          "pipeline_override": {
+            "CangwuParam_resource_training_firepower": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1,
+                    "stage": 10
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quantity_resource_training_support": {
+      "type": "input",
+      "label": "支援觉醒 · 关卡与每日目标",
+      "inputs": [
+        {
+          "name": "stage",
+          "label": "关卡编号（1～10，例如10表示1-10）",
+          "default": "10",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9]|10)$",
+          "pattern_msg": "请输入1～10"
+        },
+        {
+          "name": "amount",
+          "label": "每日目标次数（重跑只补差额）",
+          "default": "1",
+          "pipeline_type": "int",
+          "verify": "^(?:[1-9][0-9]?|100)$",
+          "pattern_msg": "请输入1～100"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_resource_training_support": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{amount}",
+                "stage": "{stage}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "choice_resource_training_support": {
+      "type": "switch",
+      "label": "支援觉醒",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_resource_training_support": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0,
+                    "stage": 10
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "启用",
+          "option": [
+            "quantity_resource_training_support"
+          ],
+          "pipeline_override": {
+            "CangwuParam_resource_training_support": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 1,
+                    "stage": 10
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "auto_stamina": {
+      "type": "switch",
+      "label": "自动补体力（不足时补充）",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "CangwuParam_stamina_settings": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            },
+            "CangwuParam_stamina_items": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0
+                  }
+                }
+              }
+            },
+            "CangwuParam_stamina_crystals": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0,
+                    "total": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "开启",
+          "option": [
+            "stamina_items",
+            "stamina_crystals"
+          ],
+          "pipeline_override": {
+            "CangwuParam_stamina_settings": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "stamina_items": {
+      "type": "input",
+      "label": "体力道具每日上限（所有任务共用，优先50再100体力道具）",
+      "inputs": [
+        {
+          "name": "items",
+          "label": "每日最多使用几个（0表示不用）",
+          "default": "0",
+          "pipeline_type": "int",
+          "verify": "^(?:[0-9]|[1-9][0-9]|100)$",
+          "pattern_msg": "请输入0～100"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_stamina_items": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": false,
+                "quantity": "{items}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "stamina_crystals": {
+      "type": "switch",
+      "label": "允许结晶购买体力（道具不够时使用）",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "不允许",
+          "pipeline_override": {
+            "CangwuParam_stamina_crystals": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": false,
+                    "quantity": 0,
+                    "total": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "允许",
+          "option": [
+            "stamina_crystal_budget"
+          ],
+          "pipeline_override": {
+            "CangwuParam_stamina_crystals": {
+              "action": {
+                "type": "Custom",
+                "param": {
+                  "custom_action": "CangwuParameter",
+                  "custom_action_param": {
+                    "enabled": true,
+                    "quantity": 0,
+                    "total": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "stamina_crystal_budget": {
+      "type": "input",
+      "label": "结晶每日购买额度（所有任务共用，两项均须大于0）",
+      "inputs": [
+        {
+          "name": "times",
+          "label": "每日最多购买次数",
+          "default": "0",
+          "pipeline_type": "int",
+          "verify": "^(?:[0-9]|[12][0-9]|30)$",
+          "pattern_msg": "请输入0～30"
+        },
+        {
+          "name": "total",
+          "label": "每日最多消耗结晶总数",
+          "default": "0",
+          "pipeline_type": "int",
+          "verify": "^[0-9]{1,5}$",
+          "pattern_msg": "请输入0～99999"
+        }
+      ],
+      "pipeline_override": {
+        "CangwuParam_stamina_crystals": {
+          "action": {
+            "type": "Custom",
+            "param": {
+              "custom_action": "CangwuParameter",
+              "custom_action_param": {
+                "enabled": true,
+                "quantity": "{times}",
+                "total": "{total}"
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

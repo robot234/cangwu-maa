@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 import json
 import os
@@ -92,6 +93,23 @@ class Context:
         self.last: Frame | None = None
         self.stop_file = ROOT / "runtime/STOP"
         self.results: list[TaskResult] = []
+        self._stamina_mode = None
+
+    @contextmanager
+    def stamina_scope(self, mode: str):
+        if mode not in ("preview", "commit") or self._stamina_mode is not None:
+            raise Halt("补体力窗口许可无效。")
+        self._stamina_mode = mode
+        try:
+            yield
+        finally:
+            self._stamina_mode = None
+
+    def stamina_frame_allowed(self, frame: Frame) -> bool:
+        if getattr(self, "_stamina_mode", None) is None:
+            return False
+        from .stamina import refill_dialog
+        return refill_dialog(frame)
 
     def log(self, message: str) -> None:
         line = f"{datetime.now(CST):%H:%M:%S} {message}"
@@ -118,7 +136,7 @@ class Context:
         if self.vision is None:
             raise RuntimeError("识图引擎未初始化。")
         self.last = self.vision.read(self.device.screenshot())
-        if self.last.paid_dialog():
+        if self.last.paid_dialog() and not self.stamina_frame_allowed(self.last):
             self.save("unexpected_purchase", self.last)
             raise Halt("出现购买、充值或付费确认界面，已停止操作。")
         return self.last
@@ -135,8 +153,12 @@ class Context:
 
     def tap(self, frame: Frame, point: tuple[int, int], reason: str, *, pause: float = 1.2) -> None:
         self.check()
-        if frame.is_loading() or frame.paid_dialog():
+        if frame.is_loading():
             raise Halt("画面仍在加载或出现付费界面，拒绝点击。")
+        if frame.paid_dialog():
+            from .stamina import refill_tap_allowed
+            if not self.stamina_frame_allowed(frame) or not refill_tap_allowed(frame, point, self._stamina_mode):
+                raise Halt("付费窗口未获当前操作许可，拒绝点击。")
         x, y = point
         if not (0 <= x < 1280 and 0 <= y < 720):
             raise Halt("按钮坐标超出画面，拒绝点击。")

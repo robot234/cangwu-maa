@@ -1,9 +1,8 @@
 """Shared weekly reward budget for the three verified armor resonance stages."""
 from __future__ import annotations
 
-import time
-
 from .feature_config import BOSSES, armor_selection, game_week, load_state, save_state
+from .resource_navigation import open_resources
 from .runtime import Context, Halt, NeedsSetup, ROOT
 from .shops import field_integer
 from .tasks import sweep_budget
@@ -48,29 +47,7 @@ def armor_ledger(path, remaining: int, week: str) -> dict:
 
 
 def open_armor(ctx: Context) -> Frame:
-    frame = ctx.home()
-    ctx.text(frame, "作战", region=(1020, 620, 1279, 719), exact=True)
-    frame = ctx.wait(lambda f: f.has("战斗副本", region=(180, 0, 520, 90)), "作战页面")
-    for attempt in range(2):
-        ctx.text(frame, "资源", region=(450, 75, 655, 195), exact=True,
-                 reason="点击资源分页" if not attempt else "资源分页未响应，核对原页面后补点一次")
-        until = min(ctx.deadline, time.monotonic() + 8)
-        while time.monotonic() < until:
-            frame = ctx.frame()
-            if not frame.is_loading() and frame.has("装甲进阶", region=(900, 450, 1150, 600)):
-                break
-            ctx.pause(.6)
-        else:
-            if not attempt and (not frame.is_loading() and not frame.reward()
-                    and frame.has("战斗副本", region=(180, 0, 520, 90))
-                    and frame.has("当前进度", region=(350, 230, 560, 320))
-                    and frame.has("资源", region=(450, 75, 655, 195), exact=True)
-                    and not frame.has("网络异常", "连接失败", "重新连接", "重新登录", "重试",
-                                      region=(250, 180, 1080, 540))):
-                continue
-            ctx.save("armor_resource_no_response", frame)
-            raise Halt("资源分页未切换，已停止操作；没有进入或消耗共鸣次数。")
-        break
+    frame = open_resources(ctx)
     ctx.text(frame, "装甲进阶", region=(900, 450, 1150, 600), exact=True)
     return ctx.wait(lambda f: f.has("本周可领取奖励次数") and f.has("超限共鸣"), "装甲进阶")
 
@@ -138,6 +115,21 @@ def armor(ctx: Context, *, preview_only: bool = False) -> None:
         stamina = frame.number_fraction((1080, 0, 1279, 85))
         if stamina is None:
             raise Halt("没有读清现有体力，拒绝共鸣扫荡。")
+        from .stamina import ensure_stamina
+        wanted_count = min(wanted, remaining, max(0, 5 - sum(state["done"].values())))
+        if wanted_count:
+            def same_stage(f):
+                info = BOSSES[boss]
+                return (f.has(info["name"], region=(940, 85, 1255, 145))
+                        and f.has("1-5", region=(815, 85, 950, 145), exact=True)
+                        and f.has("地狱", region=(940, 85, 1255, 145))
+                        and f.has("扫荡", region=(790, 610, 980, 710), exact=True)
+                        and field_integer(f, (1160, 630, 1235, 690)) == 40
+                        and remaining_rewards(f) == remaining)
+            frame = ensure_stamina(ctx, frame, 40 * wanted_count, same_stage, preview_only=preview_only)
+            stamina = frame.number_fraction((1080, 0, 1279, 85))
+            if stamina is None:
+                raise Halt("补体力后没有读清现有体力，未开始共鸣扫荡。")
         count = min(wanted, remaining, max(0, 5 - sum(state["done"].values())), stamina[0] // 40)
         if not count:
             skipped.append("本周奖励次数已用完" if not remaining else f"现有体力 {stamina[0]}，不足一次 40")
