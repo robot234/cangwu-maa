@@ -63,7 +63,13 @@ def inspect_ui(ctx: Context, params: dict) -> None:
                 raise Halt("页面检查范围无效。")
         ctx.text(frame, text, region=region, exact=True, reason=f"查看页面：{text}")
         ctx.pause(1)
-        frame = ctx.wait(lambda f: True, "页面切换完成")
+        from .resource_catalog import RESOURCE_DUNGEONS
+        dungeon = next((key for key, spec in RESOURCE_DUNGEONS.items() if text in spec["aliases"]), None)
+        if dungeon:
+            from .resource_stages import dungeon_page
+            frame = ctx.wait(lambda f: dungeon_page(f, dungeon), "检查用资源详情页面", timeout=8)
+        else:
+            frame = ctx.wait(lambda f: True, "页面切换完成")
     pages = params.get("page_right", 0) or params.get("page_left", 0)
     if not isinstance(pages, int) or not 0 <= pages <= 6:
         raise Halt("页面检查最多滑动 6 次。")

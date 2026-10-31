@@ -2,7 +2,7 @@
   "interface_version": 2,
   "name": "CangwuMaa",
   "label": "苍雾世界 · 日常助手",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "description.md",
   "welcome": "welcome.md",
   "icon": "icon.png",
@@ -1329,7 +1329,7 @@
         "reserve_stamina",
         "auto_stamina"
       ],
-      "description": "扫荡「闪耀之始-7」，每次 42 体力。可设置保留体力，只消耗现有体力；不足一次就跳过。",
+      "description": "艾吉斯·未解之谜：扫荡「闪耀之始-7」，每次42体力，探索截止2026年11月29日23:00（北京时间）。默认只用现有体力；自动补体力须另开开关并设置额度。",
       "pipeline_override": {
         "CangwuParam_stamina_settings": {
           "action": {

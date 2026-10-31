@@ -13,12 +13,13 @@ Library.open(ROOT / "app/maafw", agent_server=True)
 from maa.agent.agent_server import AgentServer
 from cangwu.maa_action import CangwuTask
 from cangwu.runtime import RunLock, load_config
+from cangwu.agent_lifecycle import watch_mxu_owner
 from launcher import environment
 
 
 def main() -> None:
     os.environ.update(environment())
-    with RunLock():
+    with watch_mxu_owner(ROOT, lambda line: print(line, flush=True)), RunLock():
         (ROOT / "runtime/STOP").unlink(missing_ok=True)
         if not AgentServer.register_custom_action("CangwuTask", CangwuTask()):
             raise RuntimeError("注册 Maa 自定义任务失败。")

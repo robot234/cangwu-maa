@@ -215,7 +215,11 @@ def expedition(ctx: Context) -> None:
     ctx.result("远征", "completed" if collected or dispatched else "already_done", detail, frame)
 
 
-def event(ctx: Context) -> None:
+def event(ctx: Context, *, preview_only: bool = False) -> None:
+    from .event_receipt import event_ledger
+    from .feature_config import save_state
+    receipt_path = ROOT / "runtime/state/event.json"
+    state = event_ledger(receipt_path)
     config = ctx.config["event"]
     if datetime.now(CST) >= datetime.fromisoformat(config["expires_at"]):
         raise NeedsSetup("当前活动配置已到期；请重新选择活动入口和关卡。")
@@ -235,6 +239,9 @@ def event(ctx: Context) -> None:
     if not frame.has(config["stage"], region=(790, 70, 1279, 180)):
         raise Halt("关卡详情不是指定关卡，拒绝消耗体力。")
     cost, reserve = int(config["stamina_cost"]), int(config.get("reserve_stamina", 0))
+    from .shops import field_integer
+    if field_integer(frame, (1160, 630, 1235, 690)) != cost:
+        raise Halt("活动关卡单次体力与配置不一致，未补体力或开始扫荡。")
     stamina = frame.number_fraction((1080, 0, 1279, 85))
     if stamina is None:
         raise Halt("无法读清现有体力，拒绝扫荡。")
@@ -243,7 +250,8 @@ def event(ctx: Context) -> None:
     # entry; never turn it into a refill/clear loop.
     frame = ensure_stamina(ctx, frame, reserve + cost,
         lambda f: f.has(config["stage"], region=(790, 70, 1279, 180))
-                  and f.has("作战准备") and f.has("扫荡", region=(790, 600, 970, 710), exact=True))
+                  and f.has("作战准备") and f.has("扫荡", region=(790, 600, 970, 710), exact=True),
+        preview_only=preview_only)
     stamina = frame.number_fraction((1080, 0, 1279, 85))
     if stamina is None:
         raise Halt("补体力后无法读清体力，未开始活动扫荡。")
@@ -269,18 +277,39 @@ def event(ctx: Context) -> None:
     actual, before, expected = sweep_budget(frame, cost, reserve)
     if actual != count:
         raise Halt(f"实际扫荡 {actual} 次，与计划 {count} 次不同，拒绝开始。")
-    ctx.save("sweep_budget", frame)
+    evidence = ctx.save("sweep_budget", frame)
+    if preview_only:
+        ctx.tap(frame, (280, 620), "取消活动扫荡预览，不消耗体力")
+        frame = ctx.wait(lambda f: not f.has("开始扫荡", region=(430, 490, 830, 590))
+                         and f.has(config["stage"], region=(790, 70, 1279, 180)), "活动扫荡预览关闭")
+        ctx.result("活动扫荡预览", "completed", f"{config['stage']} ×{actual}，体力{before}→{expected}的预览已核对并取消，没有提交扫荡或补体力。", frame)
+        return
+    ctx.check()
+    state["pending"] = {"event": config["name"], "stage": config["stage"],
+                        "expires_at": config["expires_at"], "quantity": actual, "cost": cost,
+                        "before_stamina": before, "expected_stamina": expected,
+                        "created_at": datetime.now(CST).isoformat(), "evidence": evidence}
+    save_state(receipt_path, state)
     ctx.text(frame, "开始扫荡", region=(490, 500, 790, 580), reason=f"扫荡 {actual} 次，预计体力 {before} → {expected}")
-    frame = ctx.wait(lambda f: (f.has("扫荡结算") and f.has("确认", "确定", region=(430, 560, 850, 660))) or f.reward(), "活动扫荡结算与确认按钮", timeout=90)
-    ctx.save("event_settlement", frame)
+    try:
+        frame = ctx.wait(lambda f: f.settlement_confirm() is not None or f.reward(), "活动扫荡结算与确认按钮", timeout=90)
+    except Halt as exc:
+        raise Halt("活动扫荡已提交，但没有核对到结算；已保留待确认记录，重新运行也不会再次提交。" + str(exc)) from exc
+    state["pending"]["settlement_evidence"] = ctx.save("event_settlement", frame)
+    save_state(receipt_path, state)
     if frame.reward():
-        ctx.dismiss_reward(frame)
+        frame = ctx.dismiss_reward(frame)
     else:
-        ctx.text(frame, "确认", "确定", region=(430, 560, 850, 660), reason="确认活动扫荡结算")
+        ctx.text(frame, frame.settlement_confirm().text, region=(420, 560, 850, 670), exact=True,
+                 reason="确认活动扫荡结算")
     frame = ctx.wait(lambda f: f.has("限时活动") and not f.has("扫荡结算"), "返回活动地图")
     after = frame.number_fraction((1080, 0, 1279, 85))
-    if after is None or not expected <= after[0] <= expected + 2:
-        raise Halt("扫荡后体力未能核对；已停止，不会重复提交扫荡。")
+    if after is None or not expected <= after[0] <= expected + 2 or after[0] >= before:
+        raise Halt("扫荡后体力未能核对；已保留待确认记录，不会重复提交扫荡。")
+    state["last"] = {**state["pending"], "after_stamina": after[0],
+                     "verified_at": datetime.now(CST).isoformat(), "after_evidence": ctx.save("event_verified", frame)}
+    state["pending"] = None
+    save_state(receipt_path, state)
     ctx.result("活动扫荡", "completed", f"{config['stage']} 已扫荡 {actual} 次，体力 {before} → {after[0]}。", frame)
 
 

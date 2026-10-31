@@ -84,7 +84,8 @@ def prepare_foreground(ctx: Context) -> None:
         raise NeedsSetup(message)
     if frame.reward():
         return
-    if start_button(frame) is not None or startup_loading(frame) or signin_page(frame):
+    if (start_button(frame) is not None or startup_loading(frame) or signin_page(frame)
+            or frame.all("活动公告", "游戏公告")):
         enter_game(ctx, frame)
     # Resuming a background game can restore a shop or pending receipt too.
     # Let that page's task reconcile it before any navigation or repeat input.

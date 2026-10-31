@@ -60,7 +60,7 @@ class Frame:
         return self.all("指挥室", "驾驶员", "作战", "演习") and self.has("任务", region=(1130, 230, 1279, 390))
 
     def is_loading(self) -> bool:
-        if self.has("LOADING", region=(400, 600, 850, 719)):
+        if self.has("LOADING", "载入中", "加载中", region=(400, 600, 850, 719)):
             return True
         # Some navigation transitions are black with only a corner spinner.
         # Wait for a readable page instead of interpreting that as unknown UI.

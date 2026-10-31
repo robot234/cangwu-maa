@@ -10,7 +10,7 @@ import numpy as np
 
 from .feature_config import game_day, load_state, resource_selection, save_state
 from .resource_catalog import RESOURCE_DUNGEONS
-from .resource_navigation import check_connection, open_resources
+from .resource_navigation import check_connection, open_resources, resource_page
 from .runtime import CST, Context, Halt, NeedsSetup, ROOT
 from .shops import field_integer
 from .tasks import integer, spend_budget, sweep_budget
@@ -46,11 +46,12 @@ def opening_badge(frame: Frame, word, now: datetime | None = None) -> str | None
         return badge.text
     if "常驻开放" in text or "全天开放" in text or "今日开放" in text:
         return None
-    match = re.fullmatch(r"(?:每)?(?:周|星期)([一二三四五六日天、,，/周和]+)(?:开放|开启)", text)
+    # Ordinary CN schedules use 七 for Sunday in the actual row badge.
+    match = re.fullmatch(r"(?:每)?(?:周|星期)([一二三四五六七日天、,，/周和]+)(?:开放|开启)", text)
     # Around the reset boundary, defer to the actual navigation response.
     current = (now or datetime.now(CST)).astimezone(CST)
     if match:
-        days = {"一": 0, "二": 1, "三": 2, "四": 3, "五": 4, "六": 5, "日": 6, "天": 6}
+        days = {"一": 0, "二": 1, "三": 2, "四": 3, "五": 4, "六": 5, "七": 6, "日": 6, "天": 6}
         possible_days = {current.weekday()}
         if current.hour < 5:
             possible_days.add((current.weekday() - 1) % 7)
@@ -62,8 +63,33 @@ def opening_badge(frame: Frame, word, now: datetime | None = None) -> str | None
 def open_dungeon(ctx: Context, key: str) -> Frame:
     frame = open_resources(ctx)
     spec = RESOURCE_DUNGEONS[key]
-    ctx.text(frame, *spec["aliases"], region=spec["region"], exact=True)
-    return ctx.wait(lambda f: dungeon_page(f, key), spec["label"] + "关卡列表")
+    for attempt in range(2):
+        check_connection(frame)
+        ctx.text(frame, *spec["aliases"], region=spec["region"], exact=True,
+                 reason=("进入" + spec["label"] if not attempt else spec["label"] + "入口未响应，核对原页面后补点一次"))
+        until = min(ctx.deadline, time.monotonic() + 8)
+        while time.monotonic() < until:
+            frame = ctx.frame()
+            check_connection(frame)
+            if dungeon_page(frame, key):
+                return frame
+            ctx.pause(.6)
+        if (not attempt and not frame.is_loading() and not frame.reward()
+                and frame.has("核心制造", region=(420, 450, 630, 600), exact=True)
+                and frame.has("装甲进阶", region=(900, 450, 1150, 600), exact=True)
+                and frame.has(*spec["aliases"], region=spec["region"], exact=True)):
+            if not resource_page(frame):
+                # Android banners can cover only the page title. Wait without
+                # input until the full page or the requested detail is known.
+                frame = ctx.wait(lambda f: dungeon_page(f, key) or resource_page(f),
+                                 "资源页面遮挡消失或副本详情出现")
+                if dungeon_page(frame, key):
+                    return frame
+            if resource_page(frame):
+                continue
+        ctx.save("resource_entry_no_response", frame)
+        raise Halt(spec["label"] + "入口未切换，已停止；没有进入或消耗副本次数。")
+    raise Halt(spec["label"] + "入口未切换。")
 
 
 def find_choice(ctx: Context, frame: Frame, key: str, choice: str):
@@ -121,6 +147,14 @@ def select_choice(ctx: Context, frame: Frame, key: str, choice: str) -> tuple[Fr
                     ctx.tap(frame, button.center, "关闭副本未开放提示")
                     frame = ctx.wait(lambda f: dungeon_page(f, key), "返回资源关卡列表")
                 return frame, "游戏提示当前未开放"
+            # A closed row can leave the previous subtype selected without a
+            # modal. Recheck its own live badge when the first read was unclear.
+            if dungeon_page(frame, key):
+                row = frame.find(RESOURCE_DUNGEONS[key]["choices"][choice]["label"], region=SIDE, exact=True)
+                closed = opening_badge(frame, row) if row is not None else None
+                if closed:
+                    ctx.save("resource_closed_badge", frame)
+                    return frame, closed
             if active_choice(frame, key, choice):
                 return frame, None
         ctx.pause(.4)

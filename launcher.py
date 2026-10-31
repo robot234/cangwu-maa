@@ -150,10 +150,11 @@ def main() -> int:
     return 0
 
 
-def close_idle_ui() -> None:
+def close_idle_ui(api: str | None = None) -> None:
     from urllib.request import urlopen
     from cangwu.mxu_api import discover
-    api = discover(ROOT)
+    from cangwu.windows_process import listener_pid
+    api = api or discover(ROOT)
     with urlopen(api + "/interface", timeout=3) as response:
         pi = json.load(response)
     if pi["interface"]["name"] != "CangwuMaa" or Path(pi["basePath"]).resolve() != (ROOT / "app").resolve():
@@ -162,7 +163,9 @@ def close_idle_ui() -> None:
         state = json.load(response)
     if any(item["is_running"] for item in state["instances"].values()):
         raise RuntimeError("助手还有任务在运行，请先停止任务。")
-    pid = int((ROOT / "runtime/ui.pid").read_text(encoding="ascii"))
+    # The bootstrap PID in ui.pid can differ from the serving MXU after an
+    # elevation/relaunch. Bind the close to the verified API's real listener.
+    pid = listener_pid(api)
     kernel = ctypes.WinDLL("kernel32", use_last_error=True)
     kernel.OpenProcess.restype = ctypes.c_void_p
     kernel.QueryFullProcessImageNameW.argtypes = [ctypes.c_void_p, ctypes.c_ulong, ctypes.c_wchar_p, ctypes.POINTER(ctypes.c_ulong)]
@@ -178,6 +181,8 @@ def close_idle_ui() -> None:
             raise RuntimeError("无法核对旧助手路径。")
         if Path(buffer.value).resolve() != (ROOT / "app/mxu.exe").resolve():
             raise RuntimeError("进程路径不一致，拒绝重启。")
+        if listener_pid(api) != pid:
+            raise RuntimeError("助手接口所属进程发生变化，拒绝重启。")
         if not kernel.TerminateProcess(handle, 0):
             raise RuntimeError("旧助手未能退出。")
     finally:

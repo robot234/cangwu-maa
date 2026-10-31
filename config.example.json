@@ -28,11 +28,11 @@
     "pass": true
   },
   "event": {
-    "name": "忙里偷闲的四叶草",
+    "name": "艾吉斯·未解之谜",
     "chapter": "闪耀之始",
     "stage": "闪耀之始-7",
     "stamina_cost": 42,
-    "expires_at": "2026-10-25T23:00:00+08:00",
+    "expires_at": "2026-11-29T23:00:00+08:00",
     "entry_template": "assets/event_entry.png",
     "reserve_stamina": 0
   },
