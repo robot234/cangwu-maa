@@ -131,7 +131,7 @@ class Context:
             self.check()
             self.stop.wait(min(.15, max(0, until - time.monotonic())))
 
-    def frame(self) -> Frame:
+    def _read_frame(self) -> Frame:
         self.check()
         if self.vision is None:
             raise RuntimeError("识图引擎未初始化。")
@@ -140,6 +140,30 @@ class Context:
             self.save("unexpected_purchase", self.last)
             raise Halt("出现购买、充值或付费确认界面，已停止操作。")
         return self.last
+
+    def frame(self) -> Frame:
+        frame = self._read_frame()
+        if frame.is_loading() or not frame.union_raid_prompt():
+            return frame
+        button = frame.union_raid_cancel()
+        if button is None:
+            self.save("union_raid_unreadable", frame)
+            raise Halt("联合讨伐提醒的体力进度或取消按钮未读清，停止操作。")
+        self.save("union_raid_prompt", frame)
+        self.tap(frame, button.center, "关闭已识别的联合讨伐提醒，继续原任务", pause=.6)
+        # A raid reminder can cover any page after stamina is spent. Do not
+        # expose its background to task predicates or repeat the cancel click.
+        until = min(self.deadline, time.monotonic() + 8)
+        while time.monotonic() < until:
+            frame = self._read_frame()
+            if (not frame.is_loading()
+                    and not frame.has("联合讨伐", region=(520, 110, 760, 180), exact=True)
+                    and not frame.has("前往讨伐", region=(650, 510, 880, 585), exact=True)):
+                self.save("union_raid_dismissed", frame)
+                return frame
+            self.pause(.4)
+        self.save("union_raid_not_dismissed", frame)
+        raise Halt("联合讨伐提醒取消后仍未关闭，停止操作，不重复点击。")
 
     def wait(self, predicate: Callable[[Frame], bool], description: str, timeout: float | None = None) -> Frame:
         until = min(self.deadline, time.monotonic() + (timeout or int(self.config["limits"]["page_timeout"])))

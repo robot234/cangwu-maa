@@ -625,15 +625,16 @@ def mission_point_claims(frame: Frame, period: str) -> list[Word]:
     expected = MISSION_POINT_TIERS[period]
     points = frame.number_fraction((120, 600, 330, 680))
     if points is None:
-        # Maa can split the gold total and white denominator into adjacent boxes.
+        # Maa can read the gold zero as O or split it from the denominator.
+        # Accept O only as the entire numerator here; keep the limit numeric.
         parts = sorted((word for word in frame.words if word.confidence >= .85
                         and 120 <= word.center[0] <= 330 and 600 <= word.center[1] <= 680
-                        and re.fullmatch(r"[0-9/]+", normalized(word.text))), key=lambda word: word.center[0])
-        if (2 <= len(parts) <= 3 and max(word.center[1] for word in parts) - min(word.center[1] for word in parts) <= 12
+                        and re.fullmatch(r"[0-9/o]+", normalized(word.text))), key=lambda word: word.center[0])
+        if (1 <= len(parts) <= 3 and max(word.center[1] for word in parts) - min(word.center[1] for word in parts) <= 12
                 and all(right.box[0] - left.box[2] <= 24 for left, right in zip(parts, parts[1:]))):
-            match = re.fullmatch(r"(\d+)/(\d+)", "".join(normalized(word.text) for word in parts))
+            match = re.fullmatch(r"(\d+|o)/(\d+)", "".join(normalized(word.text) for word in parts))
             if match:
-                points = int(match[1]), int(match[2])
+                points = (0 if match[1] == "o" else int(match[1])), int(match[2])
     if points is None or points[1] != expected[-1]:
         raise Halt(f"{period}积分数量或页面未读清，停止领取。")
     tiers = []

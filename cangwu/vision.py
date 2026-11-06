@@ -71,6 +71,21 @@ class Frame:
     def reward(self) -> bool:
         return self.has("获得资源", "获得道具", "获得奖励", "奖励获得", region=(390, 160, 900, 350))
 
+    def union_raid_prompt(self) -> bool:
+        return (self.has("联合讨伐", region=(520, 110, 760, 180), exact=True, confidence=.9)
+                and self.has("今日已消耗体力", region=(470, 440, 810, 490), confidence=.9))
+
+    def union_raid_cancel(self) -> Word | None:
+        if (not self.union_raid_prompt() or self.is_loading() or self.paid_dialog() or self.reward()
+                or self.has("网络异常", "网络连接异常", "连接失败", "重新连接", "重新登录", "重试",
+                            region=(250, 180, 1080, 540))):
+            return None
+        consumed = self.number_fraction((470, 440, 810, 490))
+        if (consumed is None or consumed[1] <= 0 or consumed[0] < consumed[1]
+                or not self.has("前往讨伐", region=(650, 510, 880, 585), exact=True, confidence=.9)):
+            return None
+        return self.find("取消", region=(410, 510, 580, 585), exact=True, confidence=.9)
+
     def activity_hub(self) -> bool:
         """Lobby 活动 collection: an untitled page with a left column of event tabs."""
         if self.is_home() or self.exchange_list() or self.reward():
