@@ -27,9 +27,9 @@ MAX_ARCHIVE = 300 * 1024 * 1024
 MAX_EXPANDED = 600 * 1024 * 1024
 TOP_FILES = {"README.md", "THIRD_PARTY_NOTICES.md", "DEPENDENCIES.json", "PACKAGE.json", "launcher.py",
              "config.example.json", "requirements.txt", "requirements-windows.lock",
-             "启动苍雾助手.bat", "停止助手.bat", "仅检查连接.bat",
+             "启动苍雾助手.bat", "停止助手.bat", "仅检查连接.bat", "核对商店兑换.bat",
              "app/mxu.exe", "app/interface.json", "app/icon.ico", "app/icon.png", "app/welcome.md", "app/description.md",
-             "tools/run_maa.py", "tools/setup_runtime.py", "tools/validate_resources.py"}
+             "tools/run_maa.py", "tools/setup_runtime.py", "tools/validate_resources.py", "tools/reconcile_shop.py"}
 PREFIXES = ("agent/", "cangwu/", "assets/", "app/resource/", "schemas/", "licenses/", "docs/")
 RESOURCE_PREFIXES = ("assets/", "app/resource/")
 

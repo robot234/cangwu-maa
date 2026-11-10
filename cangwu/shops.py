@@ -1,9 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from pathlib import Path
 import re
 
-from .runtime import Context, Halt, NeedsSetup, ROOT
+from .runtime import Context, Halt, NeedsSetup, ROOT, CST
+from .shop_balance import shop_balance
+from .shop_receipts import review_receipt, resolve_automatic_receipt, receipt_digest
+from .shop_recovery import balance_bounds, timestamp
 from .vision import Frame, Word, normalized, template_match
 from .feature_config import CATALOG, SHOPS, shop_period, load_state, save_state, shop_selection
 
@@ -176,7 +181,7 @@ class ShopScan:
 
 
 def find_card(ctx: Context, frame: Frame, item: dict, *, forward_only: bool = False, allow_sold: bool = False,
-              scan: ShopScan | None = None, prefer: str = "left") -> tuple[Frame, ShopCard | None]:
+              scan: ShopScan | None = None, prefer: str = "left", review_only: bool = False) -> tuple[Frame, ShopCard | None]:
     # Stop scrolling when the visual list stabilizes, rather than depending on
     # last session's scroll position. Direction only orders the search: both
     # directions are still scanned before an item is reported missing.
@@ -191,6 +196,8 @@ def find_card(ctx: Context, frame: Frame, item: dict, *, forward_only: bool = Fa
     for direction in order:
         previous = None
         for _ in range(7):
+            if review_only and not recovery_page_ready(frame):
+                raise NeedsSetup("自动核对时页面出现加载、网络或其他弹窗，保留待核对，不继续操作。")
             card = matching_card(frame, item)
             if card is None and allow_sold:
                 sold = [candidate for candidate in shop_cards(frame)
@@ -295,16 +302,23 @@ def prepare_exchange(ctx: Context, frame: Frame, item: dict, target: int) -> tup
     initial = exchange_preview(frame, item, allow_zero=True)
     if initial.quantity == 0:
         return frame, 0
+    balance = shop_balance(frame, item["currency"])
+    if balance.minimum < item["price"]:
+        ctx.log(f"{item['name']}单价{item['price']}，余额显示{balance.display}，不足以确认可兑换1份，跳过。")
+        return frame, 0
     ctx.text(frame, "MAX", region=(765, 370, 880, 420), exact=True, reason="查看现有资产可兑换的最大数量")
     frame = ctx.wait(lambda f: f.has("是否购买", region=(350, 140, 850, 225)), "商品数量设置")
-    # MAX is constrained by both the game's remaining stock and owned currency.
+    # An unaffordable MAX click may leave the default 1 unchanged. Independently
+    # cap by the identified currency's conservative balance on the new frame.
     current = exchange_preview(frame, item, allow_zero=True)
-    if current.quantity == 0:
+    balance = shop_balance(frame, item["currency"])
+    affordable = balance.minimum // item["price"]
+    if current.quantity == 0 or affordable == 0:
         return frame, 0
     if current.stock != initial.stock:
         raise Halt("查看兑换上限时商品剩余数量发生变化，停止兑换。")
     requested = target
-    target = min(target, current.quantity, initial.stock if initial.stock is not None else target)
+    target = min(target, current.quantity, affordable, initial.stock if initial.stock is not None else target)
     if target < requested:
         ctx.log(f"{item['name']}目标剩余{requested}份，当前最多兑换{current.quantity}份，本次按上限兑换{target}份。")
     # Keep enough operations to verify, submit, return home and finish the queue.
@@ -327,21 +341,174 @@ def prepare_exchange(ctx: Context, frame: Frame, item: dict, target: int) -> tup
         exchange_preview(frame, item)
         ctx.tap(frame, point, "调整已选商品兑换数量", pause=.2)
         frame = ctx.frame()
-    exchange_preview(frame, item, expected=target)
+    preview = exchange_preview(frame, item, expected=target)
+    if shop_balance(frame, item["currency"]).minimum < preview.total:
+        raise Halt("数量设置后余额不足以覆盖总价，未提交兑换。")
     return frame, target
 
 
-def shop_ledger(path, day: str) -> dict:
+def shop_ledger(path, day: str, *, allow_pending: bool = False) -> dict:
     state = load_state(path, {"version": 1, "day": day, "done": {}, "pending": None})
-    if "pending" not in state or state["pending"] is not None:
-        raise NeedsSetup(f"上次兑换结果待核对，禁止重复提交。请核对游戏及记录：{path}")
+    if "pending" not in state or (state["pending"] is not None and not allow_pending):
+        raise NeedsSetup(f"上次兑换结果待核对。再次运行商店任务会先自动重识别余额和库存，确认前不会重复提交。"
+                         f"自动核对仍无法判断时，可用「核对商店兑换.bat」人工处理。记录：{path}")
     if state.get("version") != 1 or not isinstance(state.get("done"), dict) or not isinstance(state.get("day"), str):
         raise NeedsSetup("商店兑换记录格式无效。")
     if any(not isinstance(key, str) or type(value) is not int or value < 0 for key, value in state["done"].items()):
         raise NeedsSetup("商店兑换累计数量记录无效。")
+    if state["pending"] is not None:
+        return state
     if state["day"] != day:
-        state = {"version": 1, "day": day, "done": {}, "pending": None}
+        state = {**state, "day": day, "done": {}, "pending": None}
     return state
+
+
+def shop_observation(ctx: Context, frame: Frame | None, item: dict, label: str) -> dict:
+    """Record only the observed frame; error recovery never performs input."""
+    result = {"observed_at": datetime.now(CST).isoformat(), "balance": None, "stock": None}
+    if not isinstance(frame, Frame):
+        result["unavailable"] = "没有取得新画面"
+        return result
+    try:
+        result["evidence"] = ctx.save(label, frame)
+    except Exception as exc:
+        result["evidence_error"] = str(exc)
+    try:
+        result["balance"] = asdict(shop_balance(frame, item["currency"]))
+    except Exception as exc:
+        result["balance_unavailable"] = str(exc)
+    try:
+        if frame.exchange_list():
+            card = matching_card(frame, item)
+            if card is not None:
+                result["stock"] = card.stock
+    except Exception as exc:
+        result["stock_unavailable"] = str(exc)
+    return result
+
+
+def stock_reset_days(frame: Frame, card: ShopCard) -> int | None:
+    row = 0 if card.word.center[1] < 350 else 1
+    x = card.word.center[0]
+    region = (max(280, x - 160), 350 + 253 * row, min(1280, x + 160), 395 + 253 * row)
+    words = frame.words
+    for attempt in range(2):
+        values = [int(match[1]) for word in words if word.confidence >= .9
+                  and region[0] <= word.center[0] <= region[2] and region[1] <= word.center[1] <= region[3]
+                  and (match := re.fullmatch(r"(\d+)日后重置购买次数", normalized(word.text)))]
+        if len(values) == 1:
+            return values[0]
+        if attempt == 0 and frame.vision is not None:
+            words = frame.vision.region_words(frame, region)
+        else:
+            break
+    return None
+
+
+def exchange_device(ctx: Context) -> dict | None:
+    config = ctx.config.get("device")
+    if not isinstance(config, dict):
+        return None
+    return {"serial": config.get("serial", "127.0.0.1:16384"),
+            "package": config.get("package", "com.feimo.hazeworld.mumu"),
+            "adb_server_port": config.get("adb_server_port", 15037)}
+
+
+def pending_baseline(ctx: Context, state: dict, item: dict) -> dict:
+    pending = state["pending"]
+    captured = timestamp(pending.get("requested_at"))
+    if (balance_bounds(pending.get("before_balance")) is not None
+            and type(pending.get("before_stock")) is int and captured is not None):
+        return {"source": "recorded_preview", "currency": item["currency"],
+                "observed_at": captured.isoformat(), "stock": pending["before_stock"],
+                "balance": pending["before_balance"], "stock_reset_days": pending.get("before_stock_reset_days"),
+                "evidence": pending.get("evidence"), "request_time_known": True}
+    # Older receipts contain only a preview path. Re-run Maa recognition on
+    # those exact bytes, rather than inventing missing balances or stock.
+    value = pending.get("evidence")
+    if not isinstance(value, str) or not value:
+        raise NeedsSetup("旧记录缺少兑换前截图，自动核对无法比较。")
+    original = Path(value)
+    candidates = [original, ROOT / "runtime/runs" / original.parent.name / original.name]
+    source = next((path for path in candidates if path.is_file()), None)
+    if source is None or getattr(ctx, "vision", None) is None:
+        raise NeedsSetup("没有找到旧记录的兑换前截图或识图引擎，自动核对无法比较。")
+    png = source.read_bytes()
+    previous = ctx.vision.read(png)
+    preview = exchange_preview(previous, item, expected=pending["quantity"])
+    if preview.total != pending["total"]:
+        raise NeedsSetup("旧截图总价与待核对记录不一致。")
+    balance = shop_balance(previous, item["currency"])
+    if captured is None:
+        try:
+            captured = datetime.strptime(original.parent.name, "%Y%m%d_%H%M%S_%f").replace(tzinfo=CST)
+        except ValueError as exc:
+            raise NeedsSetup("旧截图没有可核实的原运行时间，自动核对无法排除库存刷新。") from exc
+    return {"source": "preview_reocr", "currency": item["currency"], "observed_at": captured.isoformat(),
+            "stock": preview.stock, "balance": asdict(balance), "stock_reset_days": None,
+            "evidence": str(source), "preview_sha256": receipt_digest(png),
+            "request_time_known": timestamp(pending.get("requested_at")) is not None}
+
+
+def recovery_page_ready(frame: Frame) -> bool:
+    return (isinstance(frame, Frame) and not frame.is_loading() and not frame.paid_dialog()
+            and not frame.has("网络异常", "网络连接异常", "连接失败", "重新连接", "重新登录", "重试", "正在连接", "同步中",
+                              region=(250, 130, 1080, 600))
+            and frame.exchange_list())
+
+
+def reconcile_pending_exchange(ctx: Context, path: Path, shop: str) -> None:
+    state, digest = review_receipt(path, shop)
+    pending = state["pending"]
+    item = next(item for item in CATALOG[shop] if item["id"] == pending["item"])
+    if pending.get("before_device") is not None and pending["before_device"] != exchange_device(ctx):
+        raise NeedsSetup("当前设备与原兑换设备不同，保留待核对，不重复提交。")
+    ctx.log(f"正在自动核对上次{item['name']}兑换：重新进入商店读取余额和库存，确认结果前不会再次提交。")
+    before = pending_baseline(ctx, state, item)
+    ctx.check()
+    initial = ctx.frame()
+    if not isinstance(initial, Frame) or initial.is_loading() or initial.paid_dialog():
+        raise NeedsSetup("当前画面尚未就绪，保留待核对，待页面恢复后可再次自动核对。")
+    ctx.save("shop_reconcile_initial", initial)
+    if initial.has("网络异常", "网络连接异常", "连接失败", "重新连接", "重新登录", "重试", "正在连接", "同步中",
+                   region=(250, 130, 1080, 600)):
+        raise NeedsSetup("当前仍有网络或登录提示，保留待核对，不重复提交。")
+    requested = timestamp(pending.get("requested_at"))
+    age = (datetime.now(CST) - requested).total_seconds() if requested is not None else None
+    if age is not None and age < 0:
+        raise NeedsSetup("原兑换时间晚于当前时间，保留待核对，请先核对系统时间。")
+    # Give an interrupted request time to settle before treating an unchanged
+    # balance/stock as a failure. Legacy receipts lack a reliable submit time.
+    settle = 30 if age is None else max(0, 30 - age)
+    if settle:
+        ctx.log(f"等待上次请求结算稳定，约{settle:.0f}秒后只读核对。")
+        ctx.pause(settle)
+    observations, frames = [], []
+    for index in range(2):
+        if index:
+            ctx.pause(2)
+        # Re-enter on each probe so this is not a second read of the same
+        # cached Frame or a reward/confirmation overlay's background.
+        current = open_shop(ctx, shop)
+        if not recovery_page_ready(current):
+            ctx.save(f"shop_reconcile_unready_{index + 1}", current)
+            raise NeedsSetup("未取得清晰的商店页面，保留待核对，不重复提交。")
+        current, card = find_card(ctx, current, item, allow_sold=True, scan=ShopScan(), review_only=True)
+        evidence = ctx.save(f"shop_reconcile_probe_{index + 1}", current)
+        if not recovery_page_ready(current) or card is None:
+            raise NeedsSetup("未取得清晰的商店商品列表，保留待核对，不重复提交。")
+        if any(current is previous for previous in frames):
+            raise NeedsSetup("未取得独立的新画面，保留待核对，不重复提交。")
+        frames.append(current)
+        observations.append({"observed_at": datetime.now(CST).isoformat(), "fresh": True,
+                             "currency": item["currency"], "balance": asdict(shop_balance(current, item["currency"])),
+                             "stock": card.stock, "stock_reset_days": stock_reset_days(current, card),
+                             "evidence": evidence})
+    ctx.check()
+    audit, outcome = resolve_automatic_receipt(path, shop, before=before, observations=observations,
+                                              expected_digest=digest)
+    result = "已成交，计入原周期目标，不重复兑换这一笔" if outcome == "completed" else "未成交，解除待核对，按当前余额和目标继续"
+    ctx.log(f"上次{item['name']}兑换已自动核对：{result}。原记录及核对依据：{audit}")
 
 
 def exchange(ctx: Context, shop: str, *, preview_only: bool = False) -> None:
@@ -352,7 +519,12 @@ def exchange(ctx: Context, shop: str, *, preview_only: bool = False) -> None:
         ctx.result(label, "already_done", "没有勾选商品，跳过兑换。")
         return
     path = ROOT / f"runtime/state/shop_{shop}.json"
-    state = shop_ledger(path, shop_period(shop))
+    state = shop_ledger(path, shop_period(shop), allow_pending=True)
+    if state["pending"] is not None:
+        if preview_only:
+            raise NeedsSetup("预览模式不更改待核对账本；正常运行商店任务会先自动重识别核对。")
+        reconcile_pending_exchange(ctx, path, shop)
+        state = shop_ledger(path, shop_period(shop))
     plans = [(item, max(0, target - state["done"].get(item["id"], 0))) for item, target in selected]
     if not any(quantity for _, quantity in plans):
         ctx.result(label, "already_done", f"勾选商品{period_label}目标已完成，不重复兑换。")
@@ -385,6 +557,7 @@ def exchange(ctx: Context, shop: str, *, preview_only: bool = False) -> None:
             continue
         if card.stock is None and not item.get("unlimited"):
             raise Halt("商品库存状态发生变化，拒绝兑换。")
+        reset_days = stock_reset_days(frame, card)
         ctx.tap(frame, card.word.center, f"查看已勾选商品：{item['name']}")
         frame = ctx.wait(lambda f: f.has("是否购买", region=(350, 140, 850, 225)), "商品兑换确认窗口")
         if exchange_preview(frame, item, allow_zero=True).stock != card.stock:
@@ -400,27 +573,56 @@ def exchange(ctx: Context, shop: str, *, preview_only: bool = False) -> None:
             frame = cancel_exchange(ctx, frame)
             completed.append(f"{item['name']} {actual} 份预览已核对并取消")
             continue
-        state["pending"] = {"item": item["id"], "quantity": actual, "total": preview.total,
-                            "currency": item["currency"], "evidence": evidence}
+        balance = shop_balance(frame, item["currency"])
+        if balance.minimum < preview.total:
+            raise Halt("确认前余额不足以覆盖总价，未提交兑换。")
+        preview_frame = frame
+        if shop_period(shop) != state["day"]:
+            raise Halt("兑换准备期间已换日或换周，未提交；请重新运行核对当前目标。")
+        pending = {"item": item["id"], "quantity": actual, "total": preview.total,
+                   "currency": item["currency"], "evidence": evidence,
+                   "requested_at": datetime.now(CST).isoformat(), "stage": "submission_requested",
+                   "before_balance": asdict(balance), "before_stock": preview.stock,
+                   "before_stock_reset_days": reset_days, "before_device": exchange_device(ctx)}
+        state["pending"] = pending
         save_state(path, state)
-        ctx.text(frame, "确认", region=(680, 460, 950, 550), exact=True,
-                 reason=f"兑换已选商品 {item['name']} ×{actual}，消耗 {preview.total} {CATALOG['currency_labels'][item['currency']]}")
-        frame = ctx.wait(lambda f: f.reward(), "兑换成功的资源奖励", timeout=25)
-        ctx.save("exchange_reward", frame)
-        frame = ctx.dismiss_reward(frame)
-        frame = ctx.wait(lambda f: f.exchange_list()
-                         and not f.has("是否购买", region=(350, 140, 850, 225)), "兑换后商品列表")
-        # The game may re-sort the list after a purchase.
-        scan.edge = None
-        if preview.stock is not None:
-            sold_out = preview.stock == actual
-            # A card that just sold out moves to the sold-out group at the end
-            # of the list, so look rightward first.
-            frame, after = find_card(ctx, frame, item, allow_sold=sold_out, scan=scan,
-                                     prefer="right" if sold_out else "left")
-            if after is None or after.stock != preview.stock - actual:
+        try:
+            ctx.text(frame, "确认", region=(680, 460, 950, 550), exact=True,
+                     reason=f"兑换已选商品 {item['name']} ×{actual}，消耗 {preview.total} {CATALOG['currency_labels'][item['currency']]}")
+            frame = ctx.wait(lambda f: f.reward(), "兑换成功的资源奖励", timeout=25)
+            pending["reward_evidence"] = ctx.save("exchange_reward", frame)
+            pending["stage"] = "reward_observed"
+            save_state(path, state)
+            frame = ctx.dismiss_reward(frame)
+            frame = ctx.wait(lambda f: f.exchange_list()
+                             and not f.has("是否购买", region=(350, 140, 850, 225)), "兑换后商品列表")
+            # The game may re-sort the list after a purchase.
+            scan.edge = None
+            if preview.stock is not None:
+                sold_out = preview.stock == actual
+                frame, after = find_card(ctx, frame, item, allow_sold=sold_out, scan=scan,
+                                         prefer="right" if sold_out else "left")
+                pending["after_stock"] = None if after is None else after.stock
+            observation = shop_observation(ctx, frame, item, "exchange_after")
+            pending["after"] = observation
+            save_state(path, state)
+            if preview.stock is not None and pending["after_stock"] != preview.stock - actual:
                 raise Halt("兑换奖励已出现，但商品剩余数量未核对成功；记录保留待核对，不会自动再兑。")
+            after_balance = observation["balance"]
+            if (after_balance is not None
+                    and (after_balance["maximum"] < balance.minimum - preview.total
+                         or after_balance["minimum"] > balance.maximum - preview.total)):
+                raise Halt("兑换后余额变化与总价不符；记录保留待核对，不会自动再兑。")
+        except Exception as exc:
+            pending["stage"] = "result_uncertain"
+            pending["error"] = str(exc)
+            last = getattr(ctx, "last", None)
+            pending["last_observation"] = shop_observation(ctx, last, item, "exchange_uncertain")
+            pending["last_observation"]["fresh_since_submission"] = isinstance(last, Frame) and last is not preview_frame
+            save_state(path, state)
+            raise
         state["done"][item["id"]] = state["done"].get(item["id"], 0) + actual
+        state["last_exchange"] = {**pending, "stage": "verified", "verified_at": datetime.now(CST).isoformat()}
         state["pending"] = None
         save_state(path, state)
         completed.append(f"{item['name']} ×{actual}")

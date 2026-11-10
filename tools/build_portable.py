@@ -19,11 +19,11 @@ ROOT = Path(__file__).resolve().parents[1]
 TOP_LEVEL = {
     "README.md", "THIRD_PARTY_NOTICES.md", "DEPENDENCIES.json", "launcher.py",
     "config.example.json", "requirements.txt", "requirements-windows.lock",
-    "启动苍雾助手.bat", "停止助手.bat", "仅检查连接.bat",
+    "启动苍雾助手.bat", "停止助手.bat", "仅检查连接.bat", "核对商店兑换.bat",
 }
 EXTRA_FILES = {
     "app/interface.json", "app/icon.ico", "app/icon.png", "app/welcome.md", "app/description.md",
-    "tools/run_maa.py", "tools/setup_runtime.py", "tools/validate_resources.py",
+    "tools/run_maa.py", "tools/setup_runtime.py", "tools/validate_resources.py", "tools/reconcile_shop.py",
 }
 SOURCE_DIRS = ("agent/", "cangwu/", "assets/", "app/resource/", "schemas/", "licenses/", "docs/")
 
