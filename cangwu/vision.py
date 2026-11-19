@@ -9,6 +9,10 @@ import cv2
 import numpy as np
 
 
+# Maa OCR can mix simplified and traditional characters within this tab.
+EXCHANGE_SHOP_TAB = ("兑换商店", "兌换商店", "兑換商店", "兌換商店")
+
+
 def normalized(text: str) -> str:
     return re.sub(r"\s+", "", unicodedata.normalize("NFKC", text)).lower()
 
@@ -81,7 +85,9 @@ class Frame:
                             region=(250, 180, 1080, 540))):
             return None
         consumed = self.number_fraction((470, 440, 810, 490))
-        if (consumed is None or consumed[1] <= 0 or consumed[0] < consumed[1]
+        # The reminder also appears before the daily threshold (e.g. 200/300).
+        # Cancelling this identified popup does not require a full progress bar.
+        if (consumed is None or consumed[1] <= 0
                 or not self.has("前往讨伐", region=(650, 510, 880, 585), exact=True, confidence=.9)):
             return None
         return self.find("取消", region=(410, 510, 580, 585), exact=True, confidence=.9)
@@ -101,7 +107,7 @@ class Frame:
 
     def exchange_list(self) -> bool:
         return (self.has("商城系统", region=(180, 0, 450, 90))
-                and self.has("兑换商店", "兌換商店", region=(650, 70, 850, 190))
+                and self.has(*EXCHANGE_SHOP_TAB, region=(650, 70, 850, 190))
                 and self.has("精英商店", "调度商店", "后勤商店", "联合商店", "大师商店", "深渊商店", "武道会商店",
                              region=(0, 180, 235, 719), exact=True)
                 and not self.has("是否购买", region=(350, 140, 850, 225))

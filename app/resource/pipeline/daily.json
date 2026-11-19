@@ -165,6 +165,24 @@
       "Node.Action.Failed": "已停止：竞技场代理，请查看日志"
     }
   },
+  "CangwuBingo": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "bingo"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：宾果巡礼（限时）",
+      "Node.Action.Succeeded": "完成：宾果巡礼（限时）",
+      "Node.Action.Failed": "已停止：宾果巡礼（限时），请查看日志"
+    }
+  },
   "CangwuMissions": {
     "recognition": "DirectHit",
     "action": {

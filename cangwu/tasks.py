@@ -165,6 +165,7 @@ def expedition(ctx: Context) -> None:
     ctx.text(frame, "远征探索", region=(560, 140, 800, 250))
     frame = ctx.wait(lambda f: f.all("远征任务", "队伍需求"), "远征任务列表")
     collected, dispatched = 0, 0
+    full_skipped = []
     for mission in config["missions"]:
         row = frame.find(mission, region=(65, 160, 378, 585), exact=True)
         if row is None:
@@ -194,9 +195,15 @@ def expedition(ctx: Context) -> None:
         teams = frame.number_fraction((65, 70, 380, 140))
         if teams is None:
             raise Halt("远征队伍数量未读清，停止续派。")
-        if teams[0] >= teams[1]:
-            raise NeedsSetup(f"远征「{mission}」队伍已满，但没有识别到运行状态或领取按钮，已保留截图。")
-        button = frame.find("派遣", "开始远征", "确认派遣", region=(1000, 540, 1225, 640), exact=True)
+        if teams[1] <= 0 or teams[0] > teams[1]:
+            raise Halt(f"远征队伍数量异常（{teams[0]}/{teams[1]}），停止续派。")
+        button = frame.find("派遣", "开始远征", "确认派遣", "开始", region=(1000, 540, 1225, 640), exact=True)
+        if teams[0] == teams[1]:
+            if button is None:
+                raise NeedsSetup(f"远征「{mission}」队伍已满，当前页面未识别到运行、领取或空闲入口，已保留截图。")
+            full_skipped.append(mission)
+            ctx.log(f"远征队伍已满（{teams[0]}/{teams[1]}），跳过空闲远征「{mission}」，继续检查后续奖励。")
+            continue
         if button is None:
             raise NeedsSetup("空闲远征未识别到派遣按钮，请手动检查一次。")
         if not expedition_conditions(frame):
@@ -208,10 +215,12 @@ def expedition(ctx: Context) -> None:
         frame = ctx.frame()
         if not expedition_conditions(frame):
             raise Halt("远征条件发生变化，拒绝派遣。")
-        ctx.text(frame, "派遣", "开始远征", "确认派遣", region=(1000, 540, 1225, 640), exact=True)
+        ctx.text(frame, "派遣", "开始远征", "确认派遣", "开始", region=(1000, 540, 1225, 640), exact=True)
         frame = ctx.wait(lambda f: f.has("取消", region=(1000, 540, 1225, 640), exact=True) and (v := f.number_fraction((65, 70, 380, 140))) is not None and v[0] == teams[0] + 1, "远征已开始")
         dispatched += 1
     detail = f"收取 {collected} 次，续派 {dispatched} 次（{config.get('hours', 12)}小时）；运行中的远征保持原样。"
+    if full_skipped:
+        detail += "队伍已满，跳过空闲远征：" + "、".join(full_skipped) + "。"
     ctx.result("远征", "completed" if collected or dispatched else "already_done", detail, frame)
 
 
@@ -721,6 +730,11 @@ def free_gifts(ctx: Context) -> None:
     run(ctx)
 
 
+def bingo(ctx: Context) -> None:
+    from .bingo import bingo as run
+    run(ctx)
+
+
 def elite_shop(ctx: Context) -> None:
     from .shops import elite_shop as run
     run(ctx)
@@ -761,4 +775,4 @@ def resource_training(ctx: Context) -> None:
     resource_sweep(ctx, "resource_training")
 
 
-TASKS = [("base", "指挥室收菜", base), ("expedition", "远征", expedition), ("mail", "邮件", mail), ("friends", "好友", friends), ("free_gifts", "首页推荐免费礼包", free_gifts), ("shop_elite", "精英商店", elite_shop), ("shop_logistics", "后勤商店", logistics_shop), ("shop_union", "联合商店", union_shop), ("shop_master", "大师商店", master_shop), ("armor", "装甲进阶", armor), ("resource_beast", "异兽清剿", resource_beast), ("resource_core", "核心制造", resource_core), ("resource_training", "队员特训", resource_training), ("event", "活动扫荡", event), ("endurance", "续航计划", endurance), ("arena", "竞技场", arena), ("missions", "任务领奖", missions), ("pass", "通行证", battle_pass)]
+TASKS = [("base", "指挥室收菜", base), ("expedition", "远征", expedition), ("mail", "邮件", mail), ("friends", "好友", friends), ("free_gifts", "首页推荐免费礼包", free_gifts), ("shop_elite", "精英商店", elite_shop), ("shop_logistics", "后勤商店", logistics_shop), ("shop_union", "联合商店", union_shop), ("shop_master", "大师商店", master_shop), ("armor", "装甲进阶", armor), ("resource_beast", "异兽清剿", resource_beast), ("resource_core", "核心制造", resource_core), ("resource_training", "队员特训", resource_training), ("event", "活动扫荡", event), ("endurance", "续航计划", endurance), ("arena", "竞技场", arena), ("bingo", "宾果巡礼", bingo), ("missions", "任务领奖", missions), ("pass", "通行证", battle_pass)]

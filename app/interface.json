@@ -2,7 +2,7 @@
   "interface_version": 2,
   "name": "CangwuMaa",
   "label": "苍雾世界 · 日常助手",
-  "version": "0.4.11",
+  "version": "0.4.12",
   "description": "description.md",
   "welcome": "welcome.md",
   "icon": "icon.png",
@@ -1392,6 +1392,16 @@
         "arena_limit"
       ],
       "description": "使用现有演习券，等待代理结束并领取结算。若上次代理还未结束，会先等它结算。"
+    },
+    {
+      "name": "bingo",
+      "label": "宾果巡礼（限时）",
+      "entry": "CangwuBingo",
+      "group": [
+        "领奖"
+      ],
+      "default_check": true,
+      "description": "活动合集 → 宾果巡礼：逐项领取右侧每日登录、通关战斗关卡5次、消耗100／200体力的达标奖励，点击右侧空白处收起奖励图标。已领取或未达标时跳过，不翻动中间卡牌、不消耗宾果道具；建议放在作战任务之后。活动结束、找不到入口时自动跳过。"
     },
     {
       "name": "missions",

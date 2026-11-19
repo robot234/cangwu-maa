@@ -53,7 +53,7 @@ def main() -> int:
         Device.completed(controller.post_connection(), "连接 MuMu")
         tasker = Tasker()
         tasker.bind(resource, controller)
-        entries = {"startup": "CangwuStartup", "check": "CangwuCheck", "base": "CangwuBase", "expedition": "CangwuExpedition", "mail": "CangwuMail", "friends": "CangwuFriends", "event": "CangwuEvent", "endurance": "CangwuEndurance", "arena": "CangwuArena", "missions": "CangwuMissions", "pass": "CangwuPass"}
+        entries = {"startup": "CangwuStartup", "check": "CangwuCheck", "base": "CangwuBase", "expedition": "CangwuExpedition", "mail": "CangwuMail", "friends": "CangwuFriends", "event": "CangwuEvent", "endurance": "CangwuEndurance", "arena": "CangwuArena", "bingo": "CangwuBingo", "missions": "CangwuMissions", "pass": "CangwuPass"}
         from cangwu.resource_catalog import RESOURCE_DUNGEONS
         entries.update({key: value["entry"] for key, value in RESOURCE_DUNGEONS.items()})
         for key in args.tasks.split(","):

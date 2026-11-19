@@ -9,7 +9,7 @@ from .runtime import Context, Halt, NeedsSetup, ROOT, CST
 from .shop_balance import shop_balance
 from .shop_receipts import review_receipt, resolve_automatic_receipt, receipt_digest
 from .shop_recovery import balance_bounds, timestamp
-from .vision import Frame, Word, normalized, template_match
+from .vision import EXCHANGE_SHOP_TAB, Frame, Word, normalized, template_match
 from .feature_config import CATALOG, SHOPS, shop_period, load_state, save_state, shop_selection
 
 CRYSTALS = {item["id"]: item for item in CATALOG["elite"] if item["id"].startswith("crystal")}
@@ -154,7 +154,7 @@ def open_shop(ctx: Context, shop: str) -> Frame:
     frame = ctx.home()
     ctx.text(frame, "商城", region=(700, 630, 850, 719), exact=True)
     frame = ctx.wait(lambda f: f.has("商城系统", region=(180, 0, 450, 90)), "商城系统")
-    ctx.text(frame, "兑换商店", "兌換商店", region=(650, 70, 850, 190), exact=True)
+    ctx.text(frame, *EXCHANGE_SHOP_TAB, region=(650, 70, 850, 190), exact=True)
     frame = ctx.wait(lambda f: f.exchange_list(), "兑换商店")
     sidebar = (0, 200, 235, 685)
     for direction in ("up", "down"):

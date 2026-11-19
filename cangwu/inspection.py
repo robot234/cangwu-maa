@@ -1,9 +1,10 @@
 """Bounded navigation for inspecting new game features through the Maa context."""
 from .runtime import Context, Halt
 from .feature_config import SHOPS
+from .vision import EXCHANGE_SHOP_TAB
 
 
-NAVIGATION = {"商城", "商城系统", "首页推荐", "通常礼包", "每日礼包", "每周礼包", "每月礼包", "兑换商店", "兌換商店", "精英商店", "后勤商店", "联合商店", "大师商店", "作战", "资源", "装甲进阶", "超限共鸣", "异兽清剿", "異兽清剿", "异兽清缴", "核心制造", "队员特训"}
+NAVIGATION = {"商城", "商城系统", "首页推荐", "通常礼包", "每日礼包", "每周礼包", "每月礼包", *EXCHANGE_SHOP_TAB, "精英商店", "后勤商店", "联合商店", "大师商店", "作战", "资源", "装甲进阶", "超限共鸣", "异兽清剿", "異兽清剿", "异兽清缴", "核心制造", "队员特训"}
 
 
 def inspect_ui(ctx: Context, params: dict) -> None:
@@ -61,7 +62,8 @@ def inspect_ui(ctx: Context, params: dict) -> None:
         if region is not None:
             if len(region) != 4 or not (0 <= region[0] < region[2] <= 1280 and 0 <= region[1] < region[3] <= 720):
                 raise Halt("页面检查范围无效。")
-        ctx.text(frame, text, region=region, exact=True, reason=f"查看页面：{text}")
+        texts = EXCHANGE_SHOP_TAB if text in EXCHANGE_SHOP_TAB else (text,)
+        ctx.text(frame, *texts, region=region, exact=True, reason=f"查看页面：{text}")
         ctx.pause(1)
         from .resource_catalog import RESOURCE_DUNGEONS
         dungeon = next((key for key, spec in RESOURCE_DUNGEONS.items() if text in spec["aliases"]), None)
@@ -79,7 +81,7 @@ def inspect_ui(ctx: Context, params: dict) -> None:
             raise Halt("只有确认的兑换商店列表才能检查下一页。")
         start, end = ((1050, 430), (530, 430)) if params.get("page_right") else ((530, 430), (1050, 430))
         ctx.swipe(frame, start, end, "查看其他商店商品", duration=1200)
-        frame = ctx.wait(lambda f: f.has("商城系统") and f.has("兑换商店", "兌換商店", region=(650, 70, 850, 190)), "商店商品列表")
+        frame = ctx.wait(lambda f: f.has("商城系统") and f.has(*EXCHANGE_SHOP_TAB, region=(650, 70, 850, 190)), "商店商品列表")
         ctx.save(f"inspection_page_{index + 1}", frame)
     item = params.get("item", "")
     if item:
