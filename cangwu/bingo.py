@@ -62,16 +62,16 @@ def bingo(ctx: Context) -> None:
     ctx.save("bingo_before", frame)
     # Read all four rows before the first claim, so missing progress never
     # starts a partially understood sequence.
-    for mission in MISSIONS:
-        mission_state(frame, mission)
-    claimed = 0
+    claimed_before = {mission[0] for mission in MISSIONS if mission_state(frame, mission)[1]}
     for mission in MISSIONS:
         reached, already_claimed = mission_state(frame, mission)
         if not reached or already_claimed:
             continue
         label, _, top = mission
         ctx.save("bingo_" + label + "_before", frame)
-        ctx.tap(frame, (1220, top + 40), "领取宾果巡礼：" + label, pause=.6)
+        # The orange checkmark claims rewards; the item icon at x=1220 only
+        # opens its description. A claim can collect all four ready rows.
+        ctx.tap(frame, (1157, top + 40), "领取宾果巡礼：" + label, pause=.6)
         frame = ctx.wait(lambda f: bingo_page(f) or f.reward(), "宾果巡礼领取反馈", timeout=8)
         ctx.save("bingo_reward_icon", frame)
         # The game can show only the reward icon, without a reward title.
@@ -81,6 +81,7 @@ def bingo(ctx: Context) -> None:
         frame = ctx.wait(lambda f: bingo_page(f) and mission_state(f, mission)[1],
                          "宾果巡礼「" + label + "」已领取", timeout=8)
         ctx.save("bingo_" + label + "_verified", frame)
-        claimed += 1
+    claimed = sum(mission_state(frame, mission)[1] and mission[0] not in claimed_before
+                  for mission in MISSIONS)
     ctx.result(TITLE, "completed" if claimed else "already_done",
                f"已领取右侧 {claimed} 项达标奖励。" if claimed else "右侧奖励已领取或条件尚未达成，跳过。", frame)
