@@ -2,7 +2,7 @@
   "interface_version": 2,
   "name": "CangwuMaa",
   "label": "苍雾世界 · 日常助手",
-  "version": "0.4.13",
+  "version": "0.4.14",
   "description": "description.md",
   "welcome": "welcome.md",
   "icon": "icon.png",
@@ -1392,6 +1392,26 @@
         "arena_limit"
       ],
       "description": "使用现有演习券，等待代理结束并领取结算。若上次代理还未结束，会先等它结算。"
+    },
+    {
+      "name": "universe",
+      "label": "宇宙武道会（限时）",
+      "entry": "CangwuUniverse",
+      "group": [
+        "作战"
+      ],
+      "default_check": true,
+      "description": "使用当天剩余的免费匹配次数，每回战点击右侧跳过，确认结算和免费次数递减后，再领每日任务及当期任务奖励。不购买额外次数，不更改队伍。"
+    },
+    {
+      "name": "bar_chat",
+      "label": "酒吧闲谈（限时）",
+      "entry": "CangwuBarChat",
+      "group": [
+        "领奖"
+      ],
+      "default_check": true,
+      "description": "活动合集→酒吧闲谈：从底下三个罐子里固定选择中间一个，核对奖励后收起；当天完成后不再重复选择。活动入口未出现时跳过。"
     },
     {
       "name": "bingo",

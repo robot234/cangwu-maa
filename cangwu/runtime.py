@@ -237,11 +237,26 @@ class Context:
             return self.wait(lambda f: not f.reward(), "资源弹窗关闭")
         return frame
 
+    def dismiss_level_up(self, frame: Frame) -> Frame:
+        if not frame.level_up_prompt():
+            raise Halt("不是已识别的升级奖励弹窗，未点击关闭。")
+        button = frame.find("TOUCH TO EXIT", region=(520, 580, 770, 645), exact=True, confidence=.9)
+        if button is None:
+            raise Halt("升级奖励弹窗的关闭入口未读清，停止操作。")
+        self.tap(frame, button.center, "关闭已确认的升级奖励弹窗", pause=.6)
+        return self.wait(lambda f: not f.level_up_prompt()
+                         and not f.has("TOUCH TO EXIT", region=(520, 580, 770, 645)),
+                         "升级奖励弹窗关闭", timeout=8)
+
     def home(self) -> Frame:
         from .startup import signin_page, start_button
 
         for _ in range(8):
             frame = self.wait(lambda f: True, "页面加载完成")
+            if frame.level_up_prompt():
+                self.save("level_up_before_home", frame)
+                self.dismiss_level_up(frame)
+                continue
             if frame.is_home():
                 return frame
             if frame.reward():

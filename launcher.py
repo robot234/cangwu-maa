@@ -98,6 +98,12 @@ def ensure_startup_task() -> None:
         instance["tasks"] = tasks
     if not changed:
         return
+    save_task_profile(path, before, config)
+
+
+def save_task_profile(path: Path, before: bytes, config: dict) -> None:
+    import uuid
+
     backups = ROOT / "runtime/backups"
     backups.mkdir(parents=True, exist_ok=True)
     (backups / f"mxu-before-task-migration-{uuid.uuid4().hex}.json").write_bytes(before)
@@ -109,6 +115,37 @@ def ensure_startup_task() -> None:
         temporary.replace(path)
     finally:
         temporary.unlink(missing_ok=True)
+
+
+def ensure_activity_tasks() -> None:
+    """Add the two requested activities, retaining every existing task choice."""
+    import uuid
+
+    path = ROOT / "app/config/mxu-CangwuMaa.json"
+    if not path.is_file():
+        return
+    before = path.read_bytes()
+    config = json.loads(before.decode("utf-8-sig"))
+    instances = config.get("instances", [])
+    if not isinstance(instances, list):
+        raise RuntimeError("助手任务配置格式异常，原配置未改动。")
+    changed = False
+    for instance in instances:
+        tasks = instance.get("tasks", [])
+        if not isinstance(tasks, list) or not all(isinstance(task, dict) for task in tasks):
+            raise RuntimeError("助手任务配置格式异常，原配置未改动。")
+        names = {task.get("taskName") for task in tasks}
+        for name in ("universe", "bar_chat"):
+            if name in names:
+                continue
+            position = next((i for i, task in enumerate(tasks) if task.get("taskName") == "bingo"), len(tasks))
+            tasks.insert(position, {"id": str(uuid.uuid4()), "taskName": name, "enabled": True,
+                          "enabledByController": {instance.get("controllerName", "MuMu"): True},
+                          "optionValues": {}, "expanded": False})
+            changed = True
+        instance["tasks"] = tasks
+    if changed:
+        save_task_profile(path, before, config)
 
 
 def main() -> int:
@@ -145,6 +182,7 @@ def main() -> int:
     if not exe.is_file():
         raise FileNotFoundError("缺少 MXU 客户端，请查看 README.md 的环境准备说明。")
     ensure_startup_task()
+    ensure_activity_tasks()
     process = subprocess.Popen([str(exe)], cwd=exe.parent, env=env, creationflags=subprocess.CREATE_NO_WINDOW)
     (ROOT / "runtime/ui.pid").write_text(str(process.pid), encoding="ascii")
     return 0

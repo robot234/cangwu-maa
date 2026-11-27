@@ -1377,5 +1377,41 @@
         }
       }
     }
+  },
+  "CangwuUniverse": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "universe"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：宇宙武道会（限时）",
+      "Node.Action.Succeeded": "完成：宇宙武道会（限时）",
+      "Node.Action.Failed": "已停止：宇宙武道会（限时），请查看日志"
+    }
+  },
+  "CangwuBarChat": {
+    "recognition": "DirectHit",
+    "action": {
+      "type": "Custom",
+      "param": {
+        "custom_action": "CangwuTask",
+        "custom_action_param": {
+          "task": "bar_chat"
+        }
+      }
+    },
+    "max_hit": 1,
+    "focus": {
+      "Node.Action.Starting": "开始：酒吧闲谈（限时）",
+      "Node.Action.Succeeded": "完成：酒吧闲谈（限时）",
+      "Node.Action.Failed": "已停止：酒吧闲谈（限时），请查看日志"
+    }
   }
 }

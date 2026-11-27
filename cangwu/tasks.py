@@ -34,12 +34,9 @@ def spend_budget(ctx: Context, steps: int, reserve: int, what: str) -> None:
                    "没有开始，也没有消耗。")
 
 
-def sweep_budget(frame: Frame, cost: int, reserve: int) -> tuple[int, int, int]:
-    if not frame.all("扫荡次数", "剩余次数", "开始扫荡") or frame.paid_dialog():
-        raise Halt("不是已确认的活动扫荡窗口，拒绝开始。")
-    count = integer(frame, (440, 245, 695, 330))
+def _sweep_stamina_pair(words: list[Word]) -> tuple[int, int] | None:
     pair = None
-    for word in frame.words:
+    for word in words:
         x, y = word.center
         if 590 <= x <= 835 and 385 <= y <= 450 and word.confidence >= .85:
             match = re.fullmatch(r"(\d+)[>»→]+(\d+)", normalized(word.text))
@@ -47,13 +44,25 @@ def sweep_budget(frame: Frame, cost: int, reserve: int) -> tuple[int, int, int]:
                 pair = int(match[1]), int(match[2])
     if pair is None:
         # Maa may return "44>>" and "2" as separate, adjacent OCR boxes.
-        parts = sorted((word for word in frame.words if word.confidence >= .85
+        parts = sorted((word for word in words if word.confidence >= .85
                         and 590 <= word.center[0] <= 835 and 385 <= word.center[1] <= 450),
                        key=lambda word: word.center[0])
         if parts and max(word.center[1] for word in parts) - min(word.center[1] for word in parts) <= 14:
             match = re.fullmatch(r"(\d+)[>»→]+(\d+)", "".join(normalized(word.text) for word in parts))
             if match:
                 pair = int(match[1]), int(match[2])
+    return pair
+
+
+def sweep_budget(frame: Frame, cost: int, reserve: int) -> tuple[int, int, int]:
+    if not frame.all("扫荡次数", "剩余次数", "开始扫荡") or frame.paid_dialog():
+        raise Halt("不是已确认的活动扫荡窗口，拒绝开始。")
+    count = integer(frame, (440, 245, 695, 330))
+    pair = _sweep_stamina_pair(frame.words)
+    if pair is None and frame.vision is not None:
+        # A yellow zero can be weak in whole-screen OCR (420 >> 0).
+        # Re-read the actual preview at 3x scale with the same confidence gate.
+        pair = _sweep_stamina_pair(frame.vision.region_words(frame, (650, 395, 810, 450)))
     if count is None or pair is None:
         raise Halt("没有读清扫荡次数和体力消耗，拒绝开始。")
     before, after = pair
@@ -224,6 +233,54 @@ def expedition(ctx: Context) -> None:
     ctx.result("远征", "completed" if collected or dispatched else "already_done", detail, frame)
 
 
+def level_up_stamina(frame: Frame, expected: int) -> tuple[int, int]:
+    if not frame.level_up_prompt():
+        raise Halt("没有识别到升级奖励弹窗，不能将体力增加计为升级恢复。")
+    # The level-up dialog uses the same stamina-change row as the sweep preview.
+    pair = _sweep_stamina_pair(frame.words)
+    if pair is None and frame.vision is not None:
+        pair = _sweep_stamina_pair(frame.vision.region_words(frame, (650, 395, 810, 450)))
+    visible = frame.number_fraction((1080, 0, 1279, 85))
+    if (pair is None or visible is None or not expected <= pair[0] <= expected + 2
+            or pair[1] <= pair[0] or visible[0] != pair[1]):
+        raise Halt("升级弹窗的体力变化与扫荡消耗或顶部体力不一致；保留待确认记录。")
+    return pair
+
+
+def finish_event_sweep(ctx: Context, state: dict, receipt_path) -> None:
+    from .feature_config import save_state
+
+    pending = state["pending"]
+    def ready(frame: Frame) -> bool:
+        return (frame.has("限时活动")
+                and frame.has(pending["stage"], region=(790, 70, 1279, 180))
+                and not frame.has("扫荡结算") and not frame.level_up_prompt())
+
+    frame = ctx.wait(lambda f: f.level_up_prompt() or ready(f), "活动扫荡后地图或升级奖励")
+    if frame.level_up_prompt():
+        old, new = level_up_stamina(frame, pending["expected_stamina"])
+        pending["level_up"] = {"before_stamina": old, "after_stamina": new,
+                               "evidence": ctx.save("event_level_up", frame)}
+        # Keep the observed refund before closing the only visible proof.
+        save_state(receipt_path, state)
+        ctx.dismiss_level_up(frame)
+        frame = ctx.wait(ready, "升级奖励关闭后返回活动地图")
+    upgrade = pending.get("level_up")
+    expected = upgrade["after_stamina"] if upgrade else pending["expected_stamina"]
+    after = frame.number_fraction((1080, 0, 1279, 85))
+    if (after is None or not expected <= after[0] <= expected + 2
+            or (upgrade is None and after[0] >= pending["before_stamina"])):
+        raise Halt("扫荡后体力未能核对；已保留待确认记录，不会重复提交扫荡。")
+    state["last"] = {**pending, "after_stamina": after[0],
+                     "verified_at": datetime.now(CST).isoformat(), "after_evidence": ctx.save("event_verified", frame)}
+    state["pending"] = None
+    save_state(receipt_path, state)
+    detail = f"{pending['stage']} 已扫荡 {pending['quantity']} 次，体力 {pending['before_stamina']} → {after[0]}。"
+    if upgrade:
+        detail += f"已核对升级恢复体力 {upgrade['before_stamina']} → {upgrade['after_stamina']}。"
+    ctx.result("活动扫荡", "completed", detail, frame)
+
+
 def event(ctx: Context, *, preview_only: bool = False) -> None:
     from .event_receipt import event_ledger
     from .feature_config import save_state
@@ -311,15 +368,7 @@ def event(ctx: Context, *, preview_only: bool = False) -> None:
     else:
         ctx.text(frame, frame.settlement_confirm().text, region=(420, 560, 850, 670), exact=True,
                  reason="确认活动扫荡结算")
-    frame = ctx.wait(lambda f: f.has("限时活动") and not f.has("扫荡结算"), "返回活动地图")
-    after = frame.number_fraction((1080, 0, 1279, 85))
-    if after is None or not expected <= after[0] <= expected + 2 or after[0] >= before:
-        raise Halt("扫荡后体力未能核对；已保留待确认记录，不会重复提交扫荡。")
-    state["last"] = {**state["pending"], "after_stamina": after[0],
-                     "verified_at": datetime.now(CST).isoformat(), "after_evidence": ctx.save("event_verified", frame)}
-    state["pending"] = None
-    save_state(receipt_path, state)
-    ctx.result("活动扫荡", "completed", f"{config['stage']} 已扫荡 {actual} 次，体力 {before} → {after[0]}。", frame)
+    finish_event_sweep(ctx, state, receipt_path)
 
 
 ENDURANCE_TAB = "续航计划"
@@ -735,6 +784,16 @@ def bingo(ctx: Context) -> None:
     run(ctx)
 
 
+def universe(ctx: Context) -> None:
+    from .universe import universe as run
+    run(ctx)
+
+
+def bar_chat(ctx: Context) -> None:
+    from .bar_chat import bar_chat as run
+    run(ctx)
+
+
 def elite_shop(ctx: Context) -> None:
     from .shops import elite_shop as run
     run(ctx)
@@ -775,4 +834,4 @@ def resource_training(ctx: Context) -> None:
     resource_sweep(ctx, "resource_training")
 
 
-TASKS = [("base", "指挥室收菜", base), ("expedition", "远征", expedition), ("mail", "邮件", mail), ("friends", "好友", friends), ("free_gifts", "首页推荐免费礼包", free_gifts), ("shop_elite", "精英商店", elite_shop), ("shop_logistics", "后勤商店", logistics_shop), ("shop_union", "联合商店", union_shop), ("shop_master", "大师商店", master_shop), ("armor", "装甲进阶", armor), ("resource_beast", "异兽清剿", resource_beast), ("resource_core", "核心制造", resource_core), ("resource_training", "队员特训", resource_training), ("event", "活动扫荡", event), ("endurance", "续航计划", endurance), ("arena", "竞技场", arena), ("bingo", "宾果巡礼", bingo), ("missions", "任务领奖", missions), ("pass", "通行证", battle_pass)]
+TASKS = [("base", "指挥室收菜", base), ("expedition", "远征", expedition), ("mail", "邮件", mail), ("friends", "好友", friends), ("free_gifts", "首页推荐免费礼包", free_gifts), ("shop_elite", "精英商店", elite_shop), ("shop_logistics", "后勤商店", logistics_shop), ("shop_union", "联合商店", union_shop), ("shop_master", "大师商店", master_shop), ("armor", "装甲进阶", armor), ("resource_beast", "异兽清剿", resource_beast), ("resource_core", "核心制造", resource_core), ("resource_training", "队员特训", resource_training), ("event", "活动扫荡", event), ("endurance", "续航计划", endurance), ("arena", "竞技场", arena), ("universe", "宇宙武道会", universe), ("bar_chat", "酒吧闲谈", bar_chat), ("bingo", "宾果巡礼", bingo), ("missions", "任务领奖", missions), ("pass", "通行证", battle_pass)]

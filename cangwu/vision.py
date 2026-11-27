@@ -75,6 +75,10 @@ class Frame:
     def reward(self) -> bool:
         return self.has("获得资源", "获得道具", "获得奖励", "奖励获得", region=(390, 160, 900, 350))
 
+    def level_up_prompt(self) -> bool:
+        return (self.has("当前体力", region=(440, 385, 600, 445), exact=True, confidence=.9)
+                and self.has("体力上限提升", region=(440, 475, 610, 535), exact=True, confidence=.9))
+
     def union_raid_prompt(self) -> bool:
         return (self.has("联合讨伐", region=(520, 110, 760, 180), exact=True, confidence=.9)
                 and self.has("今日已消耗体力", region=(470, 440, 810, 490), confidence=.9))

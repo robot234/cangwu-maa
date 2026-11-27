@@ -99,7 +99,7 @@ class CangwuTask(CustomAction):
                 ctx.result(name, "completed", f"Maa 截图和 OCR 正常，识别到 {len(frame.words)} 段文字；" + ("当前为大厅。" if frame.is_home() else "当前页面请查看截图。"), frame)
             else:
                 # These tasks reconcile their own pages before navigating away.
-                if key not in ("expedition", "armor", "arena", "event", *SHOP_TASKS, *RESOURCE_DUNGEONS):
+                if key not in ("expedition", "armor", "arena", "event", "universe", "bar_chat", *SHOP_TASKS, *RESOURCE_DUNGEONS):
                     ctx.home()
                 task(ctx)
                 if ctx.actions:
