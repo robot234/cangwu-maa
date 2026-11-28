@@ -4,6 +4,8 @@ from __future__ import annotations
 from datetime import datetime
 import re
 
+import cv2
+
 from .feature_config import load_state, save_state, game_day
 from .runtime import Context, ROOT, CST, Halt, NeedsSetup
 from .vision import Frame, normalized
@@ -12,6 +14,7 @@ from .limited_events import open_activity
 
 TITLE = "宇宙武道会"
 COUNTER = (900, 575, 1160, 625)
+MISSION_TABS = {"每日任务": (390, 45, 640, 110), "当期任务": (660, 45, 920, 110)}
 
 
 def tournament_page(frame: Frame) -> bool:
@@ -125,9 +128,26 @@ def finish_match(ctx: Context, state: dict, path) -> Frame:
 
 
 def mission_panel(frame: Frame) -> bool:
-    return (frame.has("每日任务", region=(390, 45, 640, 110), exact=True)
+    return (not frame.is_loading() and not frame.paid_dialog() and not frame.reward()
+            and frame.has("每日任务", region=(390, 45, 640, 110), exact=True)
             and frame.has("当期任务", region=(660, 45, 920, 110), exact=True)
             and frame.has("在宇宙武道会中", region=(330, 130, 660, 560)))
+
+
+def mission_tab(frame: Frame, tab: str) -> bool:
+    if not mission_panel(frame):
+        return False
+    left, _, right, _ = MISSION_TABS[tab]
+    # The orange underline identifies the selected tab. Quest rows advance
+    # after claiming tiers, so their wording cannot identify the season page.
+    underline = frame.image[104:108, left + 30:right - 30]
+    orange = cv2.inRange(cv2.cvtColor(underline, cv2.COLOR_BGR2HSV), (5, 105, 130), (40, 255, 255))
+    return float((orange > 0).mean()) > .5
+
+
+def dismiss_missions(ctx: Context, frame: Frame) -> Frame:
+    ctx.tap(frame, (1260, 700), "收起宇宙武道会任务弹窗")
+    return ctx.wait(tournament_page, TITLE + "主页面")
 
 
 def claim_missions(ctx: Context, frame: Frame) -> tuple[Frame, int]:
@@ -140,13 +160,13 @@ def claim_missions(ctx: Context, frame: Frame) -> tuple[Frame, int]:
             button = Frame(page.image, page.original_size, words, page.png).find(*CLAIM_ALL, region=region, confidence=.9)
         return button
 
-    ctx.text(frame, "活动任务", region=(50, 620, 260, 710), exact=True)
-    frame = ctx.wait(mission_panel, "宇宙武道会任务")
+    if not mission_panel(frame):
+        ctx.text(frame, "活动任务", region=(50, 620, 260, 710), exact=True)
+        frame = ctx.wait(mission_panel, "宇宙武道会任务")
     claimed = 0
-    for tab, region, marker in (("每日任务", (390, 45, 640, 110), "每日登录"),
-                                ("当期任务", (660, 45, 920, 110), "连胜")):
+    for tab, region in MISSION_TABS.items():
         ctx.text(frame, tab, region=region, exact=True)
-        frame = ctx.wait(lambda f: mission_panel(f) and f.has(marker, region=(330, 130, 660, 560)), TITLE + tab)
+        frame = ctx.wait(lambda f: mission_tab(f, tab), TITLE + tab)
         button = button_on(frame)
         if button is None:
             raise Halt("武道会任务的一键领取按钮未读清。")
@@ -157,13 +177,12 @@ def claim_missions(ctx: Context, frame: Frame) -> tuple[Frame, int]:
         frame = ctx.wait(lambda f: f.reward(), "宇宙武道会任务奖励", timeout=10)
         ctx.save("universe_" + tab + "_reward", frame)
         ctx.dismiss_reward(frame)
-        frame = ctx.wait(mission_panel, "宇宙武道会奖励返回")
+        frame = ctx.wait(lambda f: mission_tab(f, tab), "宇宙武道会奖励返回")
         button = button_on(frame)
         if button is None or frame.colored(button):
             raise Halt("武道会任务奖励领取后的按钮状态未核对成功，未重复领取。")
         claimed += 1
-    ctx.tap(frame, (1260, 700), "收起宇宙武道会任务弹窗")
-    return ctx.wait(tournament_page, TITLE + "主页面"), claimed
+    return dismiss_missions(ctx, frame), claimed
 
 
 def universe(ctx: Context) -> None:

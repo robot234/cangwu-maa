@@ -250,6 +250,7 @@ class Context:
 
     def home(self) -> Frame:
         from .startup import signin_page, start_button
+        from .universe import dismiss_missions, mission_panel
 
         for _ in range(8):
             frame = self.wait(lambda f: True, "页面加载完成")
@@ -261,6 +262,9 @@ class Context:
                 return frame
             if frame.reward():
                 self.dismiss_reward(frame)
+                continue
+            if mission_panel(frame):
+                dismiss_missions(self, frame)
                 continue
             if frame.has("扫荡结算", region=(420, 35, 850, 130)):
                 frame = self.wait(lambda f: f.settlement_confirm() is not None, "结算确认按钮出现")
